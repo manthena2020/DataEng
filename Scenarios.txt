@@ -1,0 +1,70 @@
+
+val months = List("January", "February", "March", "April", "May")
+
+object sparkobj15 {
+
+	def main(args:Array[String]):Unit={
+
+			val conf = new SparkConf().setAppName("first").setMaster("local[*]")
+					val sc = new SparkContext(conf)
+					sc.setLogLevel("ERROR")
+
+					val spark = SparkSession.builder().getOrCreate() // DATA FRAME PROPERTIES
+					import spark.implicits._
+
+					val months = List("January", "February", "March", "April", "May")
+
+// Use map to extract and remove the first three letters
+val modifiedMonths = months.map(month => {
+                      val extractedLetters = month.take(3)  // Extract the first three letters
+                      })
+
+modifiedMonths.foreach(println)
+	}
+}
+
+
+In the code provided earlier, the map function is used to apply a specific operation to each element in the months list. Here's how it works:
+
+The months list contains the following elements: "January", "February", "March", "April", and "May."
+When you apply the map function to this list using months.map(...), it iterates over each element one by one.
+For each element (in this case, each month name), the code inside the map block is executed.
+ This code operates on one element at a time.
+Inside the map block, we use take(3) to extract the first three letters from the current month element, and
+ we use drop(3) to remove those letters, leaving the rest of the letters in the month name.
+The result of this operation is a tuple containing two elements: the extracted first three letters and the remaining letters in the month name.
+The map function collects these tuples for each element in the original list and returns a new list, modifiedMonths, containing these tuples.
+So, essentially, the map function processes each element in the original list, and for each element, it extracts the first three letters and the remaining letters, creating a new list of tuples. This allows you to work with the modified data as needed.
+
+
+-------------------------------------------------------------------------------------------------------------------------------
+123,JAVA,PROGLANGUAGE
+2456,SHELL,SCRIPTINGLANGUAGE
+
+
+bject sparkobj17 {
+
+	def main(args:Array[String]):Unit={
+
+			val conf = new SparkConf().setAppName("first").setMaster("local[*]")
+					val sc = new SparkContext(conf)
+					sc.setLogLevel("ERROR")
+
+					val spark = SparkSession.builder().getOrCreate() // DATA FRAME PROPERTIES
+					import spark.implicits._
+
+
+					// val list = List("123","JAVA","PROGLANGUAGE")
+					  val list = List("A~B","C~D","E~F")
+          // list.foreach(println)
+					// Use map to extract and remove the first three letters
+					val y = list.map(x => x.split(","))
+					                     
+
+					y.foreach(x => x.foreach(println))
+	}
+}
+In this specific case, there is no practical difference between map and flatMap when performing a
+ split operation that results in multiple elements. flatMap is typically more useful when you have
+ nested collections or when you want to flatten the results further.
+ ---------------------------------------------------------------------------------------------------------------------------

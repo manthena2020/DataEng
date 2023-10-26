@@ -1,0 +1,52 @@
+[root@ip-172-31-34-233 target]# history
+    1  yum install -y java-1.8.0-openjdk-devel.x86_64
+
+
+    2  yum install -y git
+
+
+    3  git clone https://github.com/srinivas1987devops/myweb.git
+
+
+    4  ls
+
+
+    5  sudo wget http://repos.fedorapeople.org/repos/dchen/apache-maven/epel-apache-maven.repo -O /etc/yum.repos.d/epel-apache-maven.repo
+    6  sudo sed -i s/\$releasever/6/g /etc/yum.repos.d/epel-apache-maven.repo
+    7  sudo yum install -y apache-maven
+
+
+    8  ls
+
+    9  mvn clean package
+
+   10  ls
+
+   11  cd myweb/
+   12  ls
+
+   13  mvn clean package
+
+   14  ls
+
+   15  cd target/
+
+   16  ls
+   17  history
+[root@ip-172-31-34-233 target]#
+[root@ip-172-31-34-233 target]#
+
+
+[root@ip-172-31-34-233 target]# mvn --version
+Apache Maven 3.5.2 (138edd61fd100ec658bfa2d307c43b76940a5d7d; 2017-10-18T07:58:13Z)
+Maven home: /usr/share/apache-maven
+Java version: 1.8.0_265, vendor: Oracle Corporation
+Java home: /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.265.b01-1.amzn2.0.1.x86_64/jre
+Default locale: en_US, platform encoding: UTF-8
+OS name: "linux", version: "4.14.203-156.332.amzn2.x86_64", arch: "amd64", family: "unix"
+[root@ip-172-31-34-233 target]#
+
+
+
+
+

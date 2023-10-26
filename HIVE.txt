@@ -1,0 +1,346 @@
+===========================================================================================================================================
+desc formatted  (salesraw);  ( details about the table)
+show create table (name);
+Default Directory location in HIVE
+hdfs dfs -ls /user/hive/warehouse  default  file location for managed tables
+To set Directory Location
+SET hive.metastore.warehouse.dir = /user/itv004875/warehouse;
+TO LOAD FILE FROM LOCAL
+load data local inpath '/home/cloudera/Desktop/sales2022.txt'  into table salesprocessed;
+TO LOAD FILE FROM HDFS 
+load data inpath '/user/cloudera/tbl_sales_data/part*' into table salesprocessed;
+To hide logs on console:
+set hive.server2.logging.operation.level=NONE;
+To set Tez Execution engine
+set hive.execution.engine=tez;
+set hive.server2.logging.operation.level=VERBOSE;
+set hive.server2.logging.operation.level=EXECUTION;
+To show column headers in hive prompt:
+set hive.cli.print.header=true;
+To show which database we are into in hive prompt:
+set hiveconf:hive.cli.print.current.db=true;
+set hive.exec.dynamic.partition.mode=nonstrict;
+set hive.exec.dynamic.partition=true;
+set hive.enforce.bucketing=true;
+set hive.vectorized.execution.enabled = true;
+set hive.vectorized.execution.reduce.enabled = true;
+set hive.msck.path.validation=ignore;
+set hive.cbo.enable=true;
+set hive.stats.autogather=true;
+set hive.compute.query.using.stats=true;
+set hive.stats.fetch.column.stats=true;
+set hive.stats.fetch.partition.stats=true;
+To set MSCK REPAIR TABLE
+set hive.msck.path.validation=ignore;
+MSCK REPAIR TABLE sales_data_tbl_processed_partition_by_country_state_city;
+Real time
+beeline -n allen -p welcome1 -u 'jdbc:hive2://ncn1.hadoop.com:2181,ncn2.hadoop.com:2181,ncn3.hadoop.com:2181/default;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2'
+===========================================================================================================================================
+create database if not exists itv004875;
+use itv004875;
+create table prac(id int,name varchar(100),amount int);
+insert into prac values(1,'sai',50);
+insert into prac values(2,'zeyo',60);
+insert into prac values(3,'raj',70);
+select * from prac;
+select id,name from prac;
+select * from prac where id>1;
+select * from prac where id>1 and amount>60;
+===========================================================================================================================================
+FROM LOCAL TO HIVE 
+===========================================================================================================================================
+hive -e "SET hive.metastore.warehouse.dir = /user/itv004875/warehouse;create database itv004875;"
+
+hadoop fs -ls /user/itv004875/warehouse/
+
+hive -e "SET hive.metastore.warehouse.dir = /user/itv004875/warehouse;use itv004875;create table ztab(id int);"
+
+hadoop fs -ls /user/itv004875/warehouse/itv004875.db/
+
+Lab Folks
+
+cd
+echo 1,sai>tfile
+echo 2,zeyo>>tfile
+hive    (enter)
+SET hive.metastore.warehouse.dir = /user/itv004875/warehouse;
+create database if not exists itv004875;
+use itv004875;
+create table ztab(id int,name string) row format delimited fields terminated by ',' stored as textfile;
+load data local inpath '/home/itv004875/tfile' into table ztab;
+select * from ztab;
+hadoop fs -ls/user/itv004875/warehouse/itv004875.db/ztab ;
+===========================================================================================================================================
+===========================================================================================================================================
+FROM HDFS TO HIVE 
+===========================================================================================================================================
+hive -e "SET hive.metastore.warehouse.dir = /user/itv004875/warehouse;create database itv004875;"
+
+hadoop fs -ls /user/itv004875/warehouse/
+
+hive -e "SET hive.metastore.warehouse.dir = /user/itv004875/warehouse;use itv004875;create table ztab(id int);"
+
+hadoop fs -ls /user/itv004875/warehouse/itv004875.db/
+
+Lab Folks
+
+cd
+echo 1,sai>tfile
+echo 2,zeyo>>tfile
+hive    (enter)
+SET hive.metastore.warehouse.dir = /user/itv004875/warehouse;
+create database if not exists itv004875;
+use itv004875;
+create table ztab(id int,name string) row format delimited fields terminated by ',' stored as textfile;
+load data inpath '/home/itv004875/tfile' into table ztab;
+select * from ztab;
+hadoop fs -ls/user/itv004875/warehouse/itv004875.db/ztab ;
+===============================================================================================================================
+CREATING MANGED AND EXTERNAL TABLE
+===============================================================================================================================
+
+cd
+echo 1,sai>data.csv
+echo 2,zeyo>>data.csv
+hadoop fs -mkdir /user/itv004875/mdir
+hadoop fs -mkdir /user/itv004875/edir
+hadoop fs -put data.csv /user/itv004875/mdir
+hadoop fs -put data.csv /user/itv004875/edir
+
+
+hive -e "SET hive.metastore.warehouse.dir = /user/itv004875/warehouse;
+create database if not exists itv004875;
+use itv004875;
+create table mtab(id int,name string) row format delimited fields terminated by ',' 
+location '/user/itv004875/mdir';
+select * from mtab;
+create external table etab(id int,name string) row format delimited fields terminated by ','
+ location '/user/itv004875/edir';
+ select * from etab;
+ drop table mtab;
+ drop table etab;"
+
+hadoop fs -ls /user/itv004875/
+===============================================================================================================================
+Static Load
+===============================================================================================================================
+echo 1,Sai,I>INDTxns.csv
+echo 2,zeyo,I>>INDTxns.csv
+echo 3,Hema,K>UKTxns.csv
+echo 4,ravi,K>>UKTxns.csv
+echo 5,Jai,S>USTxns.csv
+echo 6,Swathi,S>>USTxns.csv
+
+
+hive -e "set hive.metastore.warehouse.dir=/user/itv004875/warehouse;
+create database if not exists itv004875;
+use itv004875;
+drop table parttab;
+create table parttab(id int,name string,chk string)
+ partitioned by (country string) row format delimited fields terminated by ','
+ location '/user/itv004875/pdir';
+ load data local inpath '/home/itv004875/INDTxns.csv' into table parttab partition(country='INDIA');
+ load data local inpath '/home/itv004875/USTxns.csv' into table parttab partition(country='USA');
+ load data local inpath '/home/itv004875/UKTxns.csv' into table parttab partition(country='UK')"
+
+hadoop fs -ls /user/itv004875/pdir
+hadoop fs -ls /user/itv004875/pdir/country=INDIA/
+hadoop fs -ls /user/itv004875/pdir/country=USA/
+hadoop fs -ls /user/itv004875/pdir/country=UK/
+===============================================================================================================================STATIC AND DYNAMIC PARTTION 
+
+echo 1,Sai,I,IND>allcountry.csv
+echo 2,zeyo,I,IND>>allcountry.csv
+echo 3,Hema,K,UK>>allcountry.csv
+echo 4,Gomathi,K,UK>>allcountry.csv
+echo 5,Jai,S,US>>allcountry.csv
+echo 6,Swathi,S,US>>allcountry.csv
+===============================================================================================================================
+STATIC PARTTION 
+===============================================================================================================================
+set hive.metastore.warehouse.dir=/user/itv004875/warehouse;
+create database if not exists itv004875;
+use itv004875;
+drop table sitab;
+create table sitab(id int,name string,chk string) 
+partitioned by (country string) 
+row format delimited fields terminated by ',' location '/user/itv004875/sidir';
+drop table srctab;
+create table srctab(id int,name string,chk string,country string) row format delimited fields terminated by ',' location '/user/itv004875/sdir';
+load data local inpath '/home/itv004875/allcountry.csv' into table srctab;
+insert into sitab partition(country='USA') select id,name,chk from srctab where country='US';
+===============================================================================================================================
+DYNAMIC PARTTION 
+===============================================================================================================================
+drop table dyntab;
+create table dyntab(id int,name string,chk string) 
+partitioned by (country string)
+ row format delimited fields terminated by ',' location '/user/itv004875/dyndir';
+set hive.exec.dynamic.partition.mode=nonstrict;
+set hive.exec.dynamic.partition.mode=nonstrict;
+insert into dyntab partition(country) select id,name,chk,country from srctab;
+
+hadoop fs -ls /user/itv004875/sidir             ---> u will only  USA parttion
+hadoop fs -ls /user/itv004875/dyndir            ---> U will see all the partition
+===============================================================================================================================
+SUB PARTITONS
+===============================================================================================================================
+cd
+echo 1,Sai,I,IND,cash>allc.csv
+echo 2,zeyo,I,IND,credit>>allc.csv
+echo 3,Hema,K,UK,cash>>allc.csv
+echo 4,Gomathi,K,UK,credit>>allc.csv
+echo 5,Jai,S,US,cash>>allc.csv
+echo 6,Swathi,S,US,credit>>allc.csv
+echo 7,Sai,I,IND,credit>>allc.csv
+echo 8,zeyo,I,IND,cash>>allc.csv
+echo 9,Hema,K,UK,credit>>allc.csv
+echo 10,Gomathi,K,UK,cash>>allc.csv
+echo 11,Jai,S,US,credit>>allc.csv
+echo 12,Swathi,S,US,cash>>allc.csv
+
+set hive.metastore.warehouse.dir=/user/itv004875/warehouse;
+set hive.exec.dynamic.partition.mode=nonstrict;
+create database if not exists itv004875;
+use ITV004875;
+create table srcs(id int,name string,chk string,country string,spendby string) row format delimited fields terminated by ',' location '/user/itv004875/srcd';
+load data local inpath '/home/itv004875/allc.csv' into table srcs;
+
+create table tars(id int,name string,chk string) partitioned by (country string,spendby string) row format delimited fields terminated by ',' location '/user/itv004875/tard';
+
+insert into tars partition (country,spendby) select id,name,chk,country,spendby from srcs;"
+
+hadoop fs -ls /user/itv004875/tard;
+===============================================================================================================================
+PROJECT
+===============================================================================================================================
+Go to Mysql 
+===============================================================================================================================
+mysql -u nyse_user -h ms.itversity.com -pitversity
+use nyse_export;
+
+create table customer_src_itv004875(id int(10),username varchar(100),sub_port varchar(100),
+host varchar(100),date_time varchar(100),hit_count_val_1 varchar(100),hit_count_val_2 varchar(100),
+hit_count_val_3 varchar(100),timezone varchar(100),method varchar(100),`procedure` varchar(100),
+value varchar(100),sub_product varchar(100),web_info varchar(100),status_code varchar(100));
+ 
+insert into customer_src_itv004875 select * From customer_total where id>=301 and id<=330;
+
+quit
+===============================================================================================================================
+Edge Node
+===============================================================================================================================
+rm -rf /home/itv004875/avsrcdir
+mkdir /home/itv004875/avsrcdir
+cd /home/itv004875/avsrcdir
+echo -n itversity>/home/itv004875/passfile
+=============================================================================================================================== 
+sqoop import -Dmapreduce.job.user.classpath.first=true
+ --connect jdbc:mysql://ms.itversity.com/nyse_export 
+ --username nyse_user --password-file file:///home/itv004875/passfile 
+ -m 1 
+ --table customer_src_itv004875
+ --target-dir /user/itv004875/customer_stage_loc 
+ --incremental append --check-column id --last-value 0 --as-avrodatafile
+===============================================================================================================================
+hadoop fs -mkdir /user/itv004875/avscdirpro
+hadoop fs -put /home/itv004875/customer_src_itv004875.avsc /user/itv004875/avscdirpro
+===============================================================================================================================
+Hive shell
+===============================================================================================================================
+ 
+hive
+SET hive.metastore.warehouse.dir = /user/itv004875/warehouse;
+create database prodb_itv004875;
+use prodb_itv004875;
+ 
+
+ 
+create  table customer_src   ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.avro.AvroSerDe' STORED AS AVRO LOCATION 
+'/user/itv004875/customer_stage_loc'  TBLPROPERTIES 
+('avro.schema.url'='/user/itv004875/avscdirpro/customer_src_itv004875.avsc');
+ 
+select * from customer_src;   === U will see the data
+ 
+
+ 
+create external table customer_target_tab partitioned by 
+(current_day string,year string,month string,day string) 
+ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.avro.AvroSerDe' STORED AS AVRO LOCATION 
+'/user/itv004875/customer_target_tab' 
+ TBLPROPERTIES ('avro.schema.url'='/user/itv004875/avscdirpro/customer_src_itv004875.avsc');
+ 
+select * from customer_target_tab;    ==== U will not see the data
+ 
+===============
+Go to Mysql 
+===============
+
+mysql -u nyse_user -h ms.itversity.com -pitversity
+
+use nyse_export;
+
+create table customer_src_itv004875(id int(10),username varchar(100),sub_port varchar(100),
+host varchar(100),date_time varchar(100),hit_count_val_1 varchar(100),hit_count_val_2 varchar(100),
+hit_count_val_3 varchar(100),timezone varchar(100),method varchar(100),`procedure` varchar(100),
+value varchar(100),sub_product varchar(100),web_info varchar(100),status_code varchar(100));
+
+
+insert into customer_src_itv004875 select * From customer_total where id>=301 and id<=330;
+quit
+=============================
+Edge Node
+=============================
+rm -rf /home/itv004875/avsrcdir
+mkdir /home/itv004875/avsrcdir
+cd /home/itv004875/avsrcdir
+echo -n itversity>/home/itv004875/passfile
+
+sqoop import -Dmapreduce.job.user.classpath.first=true
+ --connect jdbc:mysql://ms.itversity.com/nyse_export 
+ --username nyse_user --password-file file:///home/itv004875/passfile -m 1
+ --table customer_src_itv004875 --target-dir /user/itv004875/customer_stage_loc
+ --incremental append --check-column id --last-value 0 --as-avrodatafile
+
+
+hadoop fs -mkdir /user/itv004875/avscdirpro
+hadoop fs -put /home/itv004875/avsrcdir/customer_src_itv004875.avsc /user/itv004875/avscdirpro
+====================================
+Hive shell
+====================================
+
+hive
+SET hive.metastore.warehouse.dir = /user/itv004875/warehouse;
+create database prodb_itv004875;
+use prodb_itv004875;
+
+create  table customer_src   ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.avro.AvroSerDe' STORED AS AVRO LOCATION 
+'/user/itv004875/customer_stage_loc' 
+ TBLPROPERTIES ('avro.schema.url'='/user/itv004875/avscdirpro/customer_src_itv004875.avsc');
+
+select * from customer_src;   === U will see the data
+
+
+create external table customer_target_tab partitioned by 
+(current_day string,year string,month string,day string)
+ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.avro.AvroSerDe' STORED AS AVRO LOCATION
+'/user/itv004875/customer_target_tab' 
+TBLPROPERTIES ('avro.schema.url'='/user/itv004875/avscdirpro/customer_src_itv004875.avsc');
+
+select * from customer_target_tab;    ==== U will not see the data
+
+set hive.exec.max.dynamic.partitions=1000;
+set hive.exec.dynamic.partition.mode=nonstrict;
+insert into prodb_itv004875.customer_target_tab partition
+(current_day,year,month,day) select id, username,
+sub_port,host,date_time,hit_count_val_1,hit_count_val_2,hit_count_val_3,timezone,method,'dummy' 
+as proc,value,sub_product,
+web_info,status_code,current_date,year(from_unixtime(unix_timestamp(date_time,'dd/MMM/yyyy:HH:mm:ss Z'),
+'yyyy-MM-dd')) , MONTH(from_unixtime(unix_timestamp(date_time,'dd/MMM/yyyy:HH:mm:ss Z'),'yyyy-MM-dd')) , 
+DAY(from_unixtime(unix_timestamp(date_time,'dd/MMM/yyyy:HH:mm:ss Z'),'yyyy-MM-dd'))from customer_src where 
+not(upper(web_info) like'%JAKARTA%');
+
+!hadoop fs -ls /user/itv004875>/customer_target_tab;
+
+ 
+

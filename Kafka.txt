@@ -1,0 +1,70 @@
+Kafka Handson
+
+1) Extract Kafka ---Done
+
+
+
+2) Extract Zookeeper---Done
+
+
+
+
+
+
+3) Start zookeeper  
+
+Go inside zookeeper Folder
+Go inside bin
+Open cmd line there
+Type .\zkserver and enter
+
+
+4) Start kafka service
+
+Which ever the drive you have folders (C drive/D Drive) - Go to tmp folder remove kafka-logs
+
+Go inside kafka Folder
+Open cmd at this folder
+Execute 
+
+.\bin\windows\kafka-server-start.bat .\config\server.properties
+
+
+
+5) Create a topic in kafka -- t35
+
+
+Go inside kafka folders
+Go Inside bin
+Go inside Windows
+Open cmd and Execute below command
+
+kafka-topics.bat --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic t35
+	
+
+
+
+6) Open producer CLI for that Kafka topic -- t35
+
+Go inside kafka folders
+Go Inside bin
+Go inside Windows
+Execute below command
+
+kafka-console-producer.bat --broker-list localhost:9092 --topic t35
+
+
+7) Open consumer CLI for that kafka topic -- 35tk
+
+
+Go inside kafka folders
+Go Inside bin
+Go inside Windows
+Open and Execute below command
+
+kafka-console-consumer.bat --zookeeper localhost:2181 --topic t35
+
+
+
+
+8) Start pushing the data manually and check consumer

@@ -1,0 +1,56 @@
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email import encoders
+
+# Email configuration
+sender_email = "manthenaraju2003@gmail.com"  # Sender's email address
+sender_password = "your_sender_password"  # Replace with your actual Gmail App Password if 2FA is enabled
+receiver_email = "manthenaravi2020@gmail.com"  # Recipient's email address
+subject = "Linux Log File"
+message = "Please find the Linux log file attached."
+
+# Linux log file path
+log_file_path = "/var/log/syslog"  # Replace with the actual path to your desired log file
+
+# Read the content of the Linux log file
+try:
+    with open(log_file_path, "r") as log_file:
+        log_content = log_file.read()
+except Exception as e:
+    print("An error occurred while reading the log file:", str(e))
+    log_content = "Error reading the log file."
+
+# Create an email message
+msg = MIMEMultipart()
+msg["From"] = sender_email
+msg["To"] = receiver_email
+msg["Subject"] = subject
+msg.attach(MIMEText(message, "plain"))
+
+# Attach the log content as a text file
+attachment = MIMEBase("application", "octet-stream")
+attachment.set_payload(log_content.encode("utf-8"))  # Encode the content as bytes
+encoders.encode_base64(attachment)
+
+# Extract the filename from log_file_path
+filename = log_file_path.split("/")[-1]
+attachment.add_header("Content-Disposition", "attachment; filename={}".format(filename))
+msg.attach(attachment)
+
+# Establish a secure SMTP connection with the Gmail server using SMTP over SSL
+try:
+    server = smtplib.SMTP_SSL("smtp.gmail.com", 465)  # Use SMTP_SSL for SSL
+    server.login(sender_email, sender_password)
+
+    # Send the email
+    server.sendmail(sender_email, receiver_email, msg.as_string())
+    print("Email with log file sent successfully!")
+
+except Exception as e:
+    print("An error occurred:", str(e))
+
+finally:
+    # Close the SMTP server connection
+    server.quit()

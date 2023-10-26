@@ -1,0 +1,19 @@
+Date:15-3-2023
+_________________________________________________________________________________________________
+1. The order run is sucessful ..? what it means exactly
+      in this process what i intented is 
+	  
+	  i have a table salesdata in my awsmysql 
+	  i have querried in datakitchen
+	  i want the output to be at gcp bucket 
+	  
+	  
+	  in this case where i have to find my result file.
+	  
+	  
+	  python code
+	  
+	  in case of file  from where we have to red the file... if it is from container.then how 
+	  check the path
+__________________________________________________________________________________________________________
+	  

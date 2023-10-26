@@ -1,0 +1,110 @@
+tomcat : webserver / deployment server.
+
+Tomcat portnumber ==>> 8080
+
+webserver : applications accesed via web browser ===>> webservers ==>> tomcat.
+
+tomcat ===>> deployment server..
+
+tomcat ==>> apache
+
+dev ==>> code ==>> push ==>> github ==>> maven ==>> build ==> war / jar /ear -->>copy to  tomcat ==>> under webapps ==>>App ==>> deployment.
+
+Tomcats supports ===>> java , .net , python...etc
+
+Tomcat supports both http and https protocalls 
+
+http : with out security ===>> 80
+
+https : with security ===>> SSL cirtificate link upload ===>> 443
+
+**********AWS control manager ==>>> request raise to cyber security team ===>> SSL cirtificate ==>> email ==>> ACM ==>> forward to us.==>> SSL citificate link add to tomcat instance.
+
+
+Tomcat ---> important directories
+
+1. webapps ==>> war file to copy in this directory..
+
+2. bin ===>> tomcat service ==>> start / stop
+
+3. conf ===>>> with in this directory ==>> server.xml , web.xml , tomcatusers.xml
+
+4. cd /webapps/manager/META-INIF/ ===>> context.xml ===>> value and allow tag ==>> remove.
+
+5. logs ===>>> tomcar server ===>> logs..
+
+6. default tomcat directory : /home/ec2-user/apache-tomcat-9.0.74
+
+
+
+Tomcat instalaltion steps :
+
+1. we need to take one ec2 instance and login into the instance..
+
+2. we need to install java
+
+3. online ==>> tomcat link copy ==>>> sudo wget tomcat link
+
+4. tar.gz ==>> unzip ===>>> tar -xvf tar.gz
+
+5. cd apache-9.0.74===>> webapps ( war file copy) ==>> tomcat service start ( under bin direcory)
+
+=====================================================================================
+
+******server.xml :
+
+******portnumber change
+
+SSL cirtificate link add
+
+Single sign on ---->> 
+
+Security realrms:
+
+LDAP / AD ====>> links ==>> 
+
+LDAP / AD ==>> passowrd generate ==>> 3 monthly once ===>>> reset 
+
+password ==>> encrypted passowrd.
+
+==============================================================================
+
+*****tomcatusers.xml ==>> creating the no .of users in this file only..
+
+=======================================================================
+
+*****web.xml ===>>> welcome file -list ==>>> index.html or index.htm or index.jsp
+
+==========================================================================
+
+
+How to upgrade tomcat ??
+
+tomcat 9 ==>> tomcat 10 ==>> upgrade ??
+
+1. we need to create new instance for tomcat 10 ===>> after login to instance install tomcat 10 .
+
+2. we need to take backup of tomcat 9 instance. ( image ===>>> tomcat) --->> physical servers : performence tuning commands ==> backup
+
+3. copy tomcat 9 webapps directory to tomcat 10 webapps.
+
+4. Also copy libraryfiles also.
+
+5. tomcat 10 instance ==>> reboot ===>>> success run ==>> tomcat ==>> apps ==>> run.
+
+6. tomcat9 instance ==>> delete.
+
+
+=============================================================================================
+
+
+
+
+
+<role rolename="manager-gui"/>
+<role rolename="manager-script"/>
+<user username="tomcat" password="tomcat" roles="manager-gui,manager-script"/>
+
+
+
+

@@ -1,0 +1,41 @@
+import groovy.sql.Sql
+
+// Get basic info to connect
+def hostname = hostProps.get("system.hostname")
+def user = hostProps.get("wmi.user")
+def pass = hostProps.get("wmi.pass")
+def port = 1433 
+def wildvalue = instanceProps.get("wildvalue")
+
+// Construct an SQL instance with a URL and a driver
+def url = "jdbc:sqlserver://${hostname}:${port};integratedSecurity=true;applicationIntent=ReadOnly"
+
+// Create a connection to the SQL Server
+Sql sql = Sql.newInstance(url, user, pass)
+
+sql.withTransaction {
+
+    def query = """
+        Select Convert(varchar(4),spid) as blocked_spid ,convert(varchar(4),blocked) as blocked_by_spid ,db_name(A.dbid)  as dbname, rtrim(hostname) as hostname, loginame,Convert(varchar(19),last_batch,0)  as lastbatch ,  Convert(varchar(3),open_tran) as trn  , cmd, Left(program_name,30)  as program , txt.text FROM master.dbo.sysprocesses A outer apply ::fn_get_sql(sql_handle) txt WHERE   blocked <> 0  and  ( (db_name(A.dbid) <> 'distribution' and waittime > 30000) or (db_name(A.dbid) = 'distribution' ))order by spid
+    """
+    
+    // Retrieve the result set from the query
+    def resultSet = sql.rows(query)
+    
+    // Flag variable to track if any matching database name was found
+    def foundMatchingDB = false
+    
+    // Filter and print the rows where dbname matches wildvalue
+    resultSet.each { row ->
+       
+        def spid = row.blocked_spid
+        if (spid == wildvalue) {
+            
+           println "spid: $spid"
+           
+        }
+    }
+}
+
+sql.close()
+return 0

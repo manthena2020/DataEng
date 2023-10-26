@@ -1,0 +1,20 @@
+pipeline {
+    agent any
+    environment {
+        CREDENTIALS_ID ='My First Project'
+        BUCKET = 'datakitchen'
+        PATTERN = 'salesdata'
+        LOCAL_DIR = '/var/jenkins'
+    }
+    stages {
+        stage('Download from GCS') {
+            steps{
+                // Download from GCS bucket object named PATTERN to directory LOCAL_DIR.
+                step([$class: 'DownloadStep', credentialsId: env
+                        .CREDENTIALS_ID,  bucketUri: "gs://${env.BUCKET}/${env.PATTERN}",
+                      localDirectory: env.LOCAL_DIR])
+            }
+        }
+    }
+}
+

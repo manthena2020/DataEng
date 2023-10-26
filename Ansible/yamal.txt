@@ -1,0 +1,56 @@
+-------------------
+pingtest code
+-------------------
+-
+  name: Test connectivity to target servers
+  hosts: inventory.txt
+  tasks: 
+    - name: ping test
+      ping:
+      
+      
+-----------------------------------------------------  
+-------------------
+copy file code
+-------------------    
+-
+  name: coping connectivity to target servers
+  hosts: all
+  tasks: 
+    - name: coping files
+      copy:
+        src: /root/rama
+        dest: /root/
+        
+-----------------------------------------------------        
+-------------------
+disk free space
+-------------------    
+- name: Connectivity to target servers
+  hosts: alli 
+  tasks: 
+    - name: Disk Utilization
+      shell: df -h
+      register: disk_utilization_output
+
+    - name: Display Disk Utilization Results
+      debug:
+        var: disk_utilization_output.stdout_lines
+
+      
+        
+        
+-----------------------------------------------------   
+-------------------
+LS
+------------------- 
+- name: Connectivity to target servers
+  hosts: all
+  tasks:
+    - name: Disk Utilization
+      shell: ls
+      register: ls_output
+
+    - name: Display LS  Results
+      debug:
+        var: ls_output.stdout_lines

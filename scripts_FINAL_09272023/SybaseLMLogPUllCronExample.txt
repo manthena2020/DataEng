@@ -1,0 +1,15 @@
+####PullSybaseErrorLog.sh checks to ensure the newest Sybase Error Log messages are being pulled from the Sybase Linux servers
+*/05 * * * * /home/logicmonc/scripts/PullSybaseErrorLog.sh SAPBTS01DEV.env > /home/LMSharedDir/PullSybaseErrorLogBTS01DEV.out 2>&1
+*/05 * * * * /home/logicmonc/scripts/PullSybaseErrorLog.sh SAPCDB01UAT.env > /home/LMSharedDir/PullSybaseErrorLogCDB01UAT.out 2>&1
+####PullSybaseBackupLog.sh checks to ensure the newest Sybase Backup Log messages are being pulled from the Sybase Linux servers
+*/05 * * * * /home/logicmonc/scripts/PullSybaseBackupLog.sh SAPBTS01DEV.env > /home/LMSharedDir/PullSybaseBackupLogBTS01DEV.out 2>&1
+*/05 * * * * /home/logicmonc/scripts/PullSybaseBackupLog.sh SAPCDB01UAT.env > /home/LMSharedDir/PullSybaseBackupLogCDB01UAT.out 2>&1
+####PullRepServerLog.sh checks to ensure that the newest Replication Error Log messages are being pulled
+*/05 * * * * /home/logicmonc/scripts/PullRepServerLog.sh SAPBTS01DEV.env > /home/LMSharedDir/PullRepServerLogBTS01DEV.out 2>&1
+####Check to see if a clean up of Sybase log files and pkill all logicmonc processes when necessary
+59 * * * * /home/logicmonc/scripts/CleanupSybaseLMLogs.sh SAPBTS01DEV.env 200 > /home/LMSharedDir/CleanupSybaseLMLogs.out 2>&1
+####pkill all Log Pull processes every 2 days at 230 AM Local Time
+##Out temporarily WNL 30 2 1-31/2 * * /home/logicmonc/scripts/RebootLogPulls.sh SAPBTS01DEV.env > /home/LMSharedDir/RebootLogPulls.out 2>&1
+####Pull the Rep Command Pre Processor log files (future enhancement)
+#PullAdminDiskSpaceLogs.sh,PullRepAdminHealthLogs.sh,PullRepAdminWhoIsDownLogs.sh,PullRepAdminWhoSQMLogs.sh,PullRepAdminWhoSQTLogs.sh
+## WNL */05 * * * * /usr/bin/date > /tmp/TheDateCheckFromlogicmonc

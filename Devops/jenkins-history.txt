@@ -1,0 +1,33 @@
+[root@ip-172-31-1-34 workspace]# history
+    1  yum install -y java-1.8.0-openjdk-devel.x86_64
+
+
+    2  yum install -y git
+
+
+    3  sudo wget http://repos.fedorapeople.org/repos/dchen/apache-maven/epel-apache-maven.repo -O /etc/yum.repos.d/epel-apache-maven.repo
+    4  sudo sed -i s/\$releasever/6/g /etc/yum.repos.d/epel-apache-maven.repo
+    5  sudo yum install -y apache-maven
+
+
+    6  sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat/jenkins.repo
+    7  sudo rpm --import https://pkg.jenkins.io/redhat/jenkins.io.key
+    8  yum install -y jenkins
+
+
+    9  service jenkins start
+
+   10  cat /var/lib/jenkins/secrets/initialAdminPassword
+
+
+   11  cd /var/lib/jenkins/
+   12  ls
+   13  cd workspace/
+   14  ls
+   15  history
+[root@ip-172-31-1-34 workspace]#
+[root@ip-172-31-1-34 workspace]#
+[root@ip-172-31-1-34 workspace]#
+[root@ip-172-31-1-34 workspace]#
+
+chmod 777 /var/run/docker.sock

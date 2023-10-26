@@ -1,0 +1,88 @@
+
+
+i thank you all for making me part of your team
+
+
+In current data world   we are generating petabytes of data from all over the world.
+
+we have many challenges right from analysing that data and processing the data.
+
+
+
+
+ currently challenges we are  facing like 
+
+
+
+
+Data ingestion  issues: 
+
+Data format compatibility: Hadoop supports various data formats 
+like Avro, Parquet, etc., and data in different formats may not be directly ingestible.
+
+Data quality: Data quality issues like missing values, incorrect data type, etc., 
+can impact the accuracy of results generated from the ingested data.
+
+Data security: Ensuring the security of sensitive data during the ingestion process is crucial,
+especially while transferring data over the network.
+
+Scalability: As the volume of data increases,
+the data ingestion process must be able to scale up accordingly to handle the increased load.
+
+Monitoring and troubleshooting: Monitoring and troubleshooting of the data ingestion process
+can be challenging as it involves multiple components and processes.
+
+Processing tools: 
+
+analysing tools :
+
+integration with cloud services:
+
+
+To overcome all these issues if  we  cany offer single point of solution as dataops as service 
+works really well.
+
+
+
+
+
+cloud integration issues 
+
+Data transfer limitations: Moving large amounts of data from on-premise systems to cloud-based 
+ones can be slow and expensive due to bandwidth constraints.
+
+Compatibility issues: Different cloud services may have different data storage and processing
+ formats, making it difficult to integrate them with big data technologies.
+
+Security concerns: Storing sensitive data in the cloud can raise security and privacy concerns.
+
+Cost management: Running big data applications in the cloud can be expensive, especially when 
+processing large amounts of data, making it important to carefully manage costs.
+
+Scalability limitations: The scalability of cloud-based big data solutions may be limited by 
+the available computing resources, making it important to carefully monitor performance and 
+adjust resources as needed.
+
+
+what has to be focused on  DataKitchen
+
+steep learning curve: Some users find the interface and tools offered by DataKitchen to be complex
+and difficult to use.
+
+Limited integration options: DataKitchen integrates with a limited number of tools and systems,
+ which may not meet the needs of some users.
+
+High cost: Some users consider the cost of DataKitchen to be high compared to other similar tools in the market.
+
+Lack of scalability: Some users have reported issues with scalability when dealing with large data sets, 
+which can impact performance.
+
+Limited reporting and visualization capabilities: DataKitchen provides limited reporting 
+and visualization capabilities, which can be an issue for users who require more robust data 
+analysis and visualization tools.
+
+
+data quality check  issues :Duplicate data, ( can we avoid from beginin itself )
+
+
+

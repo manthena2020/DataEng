@@ -1,0 +1,103 @@
+DAX FUNCTIONS
+===========================================================================================================================================
+A.TEXT DAX FUNCTIONS:
+===========================================================================================================================================
+1.up = UPPER(globalorders[Market])
+2.len = len(globalorders[Market])
+3.low = LOWER(globalorders[Market])
+4.lef = LEFT(globalorders[Market],3)
+5.rig = RIGHT(globalorders[Market],3)
+6.tri = TRIM(globalorders[Category])
+7.mi = MID(globalorders[Segment],3,2)
+8.rep = REPLACE(globalorders[CustomerName],2,3,"&&&&")
+9.reept = REPT(REPLACE(globalorders[CustomerName],2,3,"&&&&"),2)
+10.exc = EXACT(globalorders[up],globalorders[up])
+11.fin = FIND("A",globalorders[CustomerName],1,BLANK())
+12.sub = SUBSTITUTE("RAVI",globalorders[CustomerName],"A")
+13.ser = SEARCH("A",globalorders[CustomerName],1,BLANK())
+14.comb = COMBINEVALUES("&",globalorders[Market],globalorders[Segment])
+15.conc = CONCATENATE(globalorders[Market],globalorders[Segment])
+===========================================================================================================================================
+===========================================================================================================================================
+B.PARENT CHILD DAX FUNCTIONS:
+===========================================================================================================================================
+1.path = path = PAth(emp[ EMPID],emp[MID])
+2.pathcontains = PATHCONTAINS(emp[path],"3")
+3.pathitem = PATHITEM(emp[path],4)
+4.pathitemreverse = PATHITEMREVERSE(emp[path],4)
+5.pathlenght = PATHLENGTH(emp[path])
+===========================================================================================================================================
+C.TIME INTELLIGENCE FUNCTIONS:
+===========================================================================================================================================
+DATE TABLE = CALENDARAUTO()
+CREATE A TABLE USING CALENDERAUTO() FUNCTION BY TAKING THE TABLE WHICH HAS DATA HAS REFERENCE
+MARK THE TABLE DATATABLE
+--FOR DATATABLE  CREATED , CLICK ON THE ELIPSE (THREE DOTS)
+--SELECT MARK AS  DATATABLE --SEELCT THE DATE COLOUMN -- CLICK OK
+===========================================================================================================================================
+Quarter = QUARTER('DATE TABLE'[Date])
+year = YEAR('DATE TABLE'[Date])
+1.PYS = CALCULATE(SUM(globalorders[Sales]),PREVIOUSYEAR('DATE TABLE'[Date]))
+2.PQRT = CALCULATE(sum(globalorders[Sales]),PREVIOUSQUARTER('DATE TABLE'[Date]))
+3.PRM = CALCULATE(sum(globalorders[Sales]),PREVIOUSMONTH('DATE TABLE'[Date]))
+4.NYS = CALCULATE(SUM(globalorders[Sales]),NEXTYEAR('DATE TABLE'[Date]))
+5.NQ = CALCULATE(SUM(globalorders[Sales]),NEXTQUARTER('DATE TABLE'[Date]))
+6.NMONTH = CALCULATE(SUM(globalorders[Sales]),NEXTMONTH('DATE TABLE'[Date]))
+7.NDAY = CALCULATE(SUM(globalorders[Sales]),NEXTDAY('DATE TABLE'[Date]))
+8.SOY = CALCULATE(SUM(globalorders[Sales]),STARTOFYEAR('DATE TABLE'[Date]))
+9.SOQ = CALCULATE(SUM(globalorders[Sales]),STARTOFQUARTER('DATE TABLE'[Date]))
+10.SOM = CALCULATE(SUM(globalorders[Sales]),STARTOFMONTH('DATE TABLE'[Date]))
+11.EOY = CALCULATE(SUM(globalorders[Sales]),ENDOFYEAR('DATE TABLE'[Date]))
+12.EOQ = CALCULATE(SUM(globalorders[Sales]),ENDOFQUARTER('DATE TABLE'[Date]))
+13.EOM = CALCULATE(SUM(globalorders[Sales]),ENDOFMONTH('DATE TABLE'[Date]))
+17.yearoveryear = DIVIDE((SUM(GlobalOrders[Sales]))-[PREVIOUSYEAR],[PREVIOUSYEAR])
+18.yearoveryear %  = DIVIDE((SUM(GlobalOrders[Sales]))-[PREVIOUSYEAR],[PREVIOUSYEAR]) * 100
+===========================================================================================================================================
+D. DATE AND TIME DAX FUNCTIONS
+===========================================================================================================================================
+1. now = NOW() - Gives Current date & TIME
+2.TODAY = TODAY() - Gives Todays DATE
+3.UTC = UTCNOW() - Gives UTC TIME
+4. UTN = UTCTODAY() - Gives Todays UTC date
+5.date = DATE(2023,3,3) - sets date 
+6.DATEDIFF = DATEDIFF(GTIME[OrderDate],GTIME[ShipDate],DAY) - Date difference
+7.year = YEAR(GTIME[now])- Current year
+8.QUARTER = QUARTER(GTIME[now]) - Current Quarter
+9.month = MONTH(GTIME[now])-Current month
+10.monthname = FORMAT(MONTH(GTIME[OrderDate].[Date]),"MMM") - Dispalys Month Name
+11.QUARTER NAME = FORMAT(QUARTER(GTIME[OrderDate].[Date]),"\QTR Q ")  -- Displays Quater name
+12.day = DAY(GTIME[OrderDate])  --To extract DAY
+13.HOur = HOUR(GTIME[now]) -- To extract Hrs
+14.Min = MINUTE(GTIME[now]) -- To Extract Minutes
+15.SEC = SECOND(GTIME[now]) -- To EXTRACT SECONDS
+16.weekday = WEEKDAY(GTIME[now],3) -- TO extract weekday
+17. weeknum = WEEKNUM(GTIME[now],2) -- To extract weeknum
+18.EMON = EOMONTH(GTIME[OrderDate],3) -- To display END OF MONTH
+19. EDATE = EDATE(GTIME[ShipDate],2)
+===========================================================================================================================================
+===========================================================================================================================================
+E. COUNT  DAX FUNCTIONS
+===========================================================================================================================================
+1. countrows = COUNTROWS(sales)
+2.countblanks = COUNTBLANK(sales[SALES])
+3.distinctblank = DISTINCTCOUNTNOBLANK(sales[SALES])
+4.disccount = DISTINCTCOUNT(sales[MARKET])
+5.count = COUNT(sales[MARKET])
+6.counta = COUNTA(sales[MARKET])
+7.countx = COUNTX(FILTER(sales,sales[MARKET] = "APAC"),sales[SALES])
+8.Countax = COUNTAX(FILTER(sales,sales[MARKET] = "APAC"),sales[SALES])
+===========================================================================================================================================
+===========================================================================================================================================
+F. AGGREGATE  DAX FUNCTIONS
+===========================================================================================================================================
+1.sum = SUM(sales[SALES])
+2.sumx = SUMX(FILTER(sales,sales[MARKET] = "APAC"),sales[SALES])
+3.avg = AVERAGE(sales[SALES])
+4.AVGx = AVERAGEX(FILTER(sales,sales[MARKET] = "APAC"),sales[SALES])
+5.product = PRODUCT(sales[SALES])
+6.productx = PRODUCTX(FILTER(sales,sales[MARKET] = "APAC"),sales[SALES])
+7.minum = MIN(sales[SALES])
+8.minumA = MINA(sales[SALES])
+9.MINX = MINX(FILTER(sales,sales[MARKET] = "APAC"),sales[SALES])
+
+===========================================================================================================================================

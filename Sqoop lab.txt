@@ -1,0 +1,241 @@
+
+======================================================================================================================================================================================================================================================================================================
+# Import data from MYSQL
+sqoop import  -Dmapreduce.job.user.classpath.first=true  --connect jdbc:mysql://zeyodb.cyewo8l7hsyn.ap-northeast-1.rds.amazonaws.com/zeyodb --username root --password Aditya908 --table zeyotab --m 1 --delete-target-dir --target-dir /user/itv004875/avrodir2 --as-avrodatafile
+=====================================================================================================================================================================================================================================================================================================
+# creating Password file
+
+vi /home/itv004875/dataeng/sqoop/pass.txt
+
+Insert the following data 
+
+--connect
+jdbc:mysql://zeyodb.cyewo8l7hsyn.ap-northeast-1.rds.amazonaws.com/itv004875
+--username
+root
+--password
+Aditya908
+
+Save the file and Exit
+=====================================================================================================================================================================================================================================================================================================
+# using password file
+sqoop import
+--options-file /home/itv004875/dataeng/sqoop/pass.txt  
+--table salestable1 
+--delete-target-dir 
+--target-dir /user/itv004875/sqoop/salesdata1/ 
+--m 1
+=====================================================================================================================================================================================================================================================================================================
+# To export data from HDFS to MYSQL
+sqoop export 
+--options-file /home/itv004875/dataeng/sqoop/pass.txt 
+--table salestable  
+--export-dir  /user/itv004875/sqoop/salestable1/part-m-* 
+=====================================================================================================================================================================================================================================================================================================
+# Import using where clause
+sqoop import  
+--options-file /home/itv004875/dataeng/sqoop/pass.txt  
+--table cust 
+--where "location='chennai'"  
+--delete-target-dir 
+--target-dir /user/itv004875/sqoop/cust/
+ --m 1
+=====================================================================================================================================================================================================================================================================================================
+ #Import using where clause
+sqoop import  
+--options-file /home/itv004875/dataeng/sqoop/pass.txt  
+--table cust 
+--where "location='chennai'"  
+--delete-target-dir 
+--target-dir /user/itv004875/sqoop/cust/ 
+--m 1
+=====================================================================================================================================================================================================================================================================================================
+#Import using multiple where clause
+sqoop import 
+--options-file /home/itv004875/dataeng/sqoop/pass.txt  
+--table cust 
+--where "location in ('chennai','hyderabad')"  
+--delete-target-dir 
+--target-dir /user/itv004875/sqoop/cust/1 
+--m 1
+=====================================================================================================================================================================================================================================================================================================
+#Import using multiple where clause
+sqoop import 
+--options-file /home/itv004875/dataeng/sqoop/pass.txt  
+--table cust 
+--where "location ='hyderabad' and id>2"  
+--delete-target-dir 
+--target-dir /user/itv004875/sqoop/cust/2 
+--m 1
+=====================================================================================================================================================================================================================================================================================================
+# Import data using Querry- Join Table querry
+sqoop import 
+--options-file /home/itv004875/dataeng/sqoop/pass.txt  
+--query "select cust1.*,cust2.product from cust1 join cust2 where cust1.id=cust2.id and \$CONDITIONS" 
+--m 1 
+--delete-target-dir 
+--target-dir /user/itv004875/sqoop/join
+=====================================================================================================================================================================================================================================================================================================
+# Import data - Required Columns using where 
+sqoop import 
+--options-file /home/itv004875/dataeng/sqoop/pass.txt 
+--table cust 
+--where "location='chennai'" 
+--columns name,location 
+--m 1 
+--delete-target-dir 
+--target-dir /user/itv004875/sqoop/columns
+=====================================================================================================================================================================================================================================================================================================
+# importing data from sql for Incremental
+sqoop import 
+--options-file /home/itv004875/dataeng/sqoop/pass.txt 
+--table custincre 
+--m 1 
+--delete-target-dir 
+--target-dir /user/itv004875/sqoop/Incremental
+=====================================================================================================================================================================================================================================================================================================
+# Incremental append import of data from last value
+sqoop import 
+--options-file /home/itv004875/dataeng/sqoop/pass.txt 
+--table custincre --m 1  
+--target-dir /user/itv004875/sqoop/Incremental 
+--incremental append 
+--check-column id 
+--last-value 4
+=====================================================================================================================================================================================================================================================================================================
+# Sqoop Auto job creation
+sqoop job 
+--create incre 
+-- import 
+--connect jdbc:mysql://zeyodb.cyewo8l7hsyn.ap-northeast-1.rds.amazonaws.com/itv004875 
+--username root 
+--password-file file:///home/itv004875/pfile 
+--table custjob 
+--m 1 
+--target-dir /user/itv004875/sqoop/autoincremental 
+--incremental append 
+--check-column id 
+--last-value 0
+
+To Run Job 
+sqoop job --exec (incre) Job name
+
+To Delete job
+ sqoop job --delete (incre)job name
+ 
+ To list sqoop jobs available
+ sqoop job --list
+ 
+ To show details of particular sqoop job
+ sqoop job -- show (Job name)
+===================================================================================================================================================================================================================================================================================================== 
+Lab Incremental Job with date 
+sqoop job 
+--create incred 
+-- import 
+--connect jdbc:mysql://zeyodb.cyewo8l7hsyn.ap-northeast-1.rds.amazonaws.com/itv004875 
+--username root 
+--password-filefile:///home/itv004875/pfile 
+--table custjob1 --m 1 
+--target-dir /user/itv004875/sqoop/dateincre 
+--incremental append 
+--check-column tdate 
+--last-value 0000-00-00
+===================================================================================================================================================================================================================================================================================================== 
+MYSQL TO AWS USING SQOOP Import 
+=====================================================================================================================================================================================================================================================================================================
+Cloudera
+ 
+mysql -uroot -pcloudera
+create database if not exists zdb;
+use zdb;
+drop table cust;
+create table cust(id int,name varchar(100));
+insert into cust value(1,'zeyo');
+insert into cust value(2,'analytics');
+select * from cust;
+quit
+
+sqoop import -Dfs.s3a.access.key=AKIAS3T7N3CTNLIPQZZM -Dfs.s3a.secret.key=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 -Dfs.s3a.endpoint=s3.ap-south-1.amazonaws.com --connect jdbc:mysql://localhost/zdb --username root --password cloudera --table cust --m 1  --target-dir  s3a://srizeyo/rajumanthena
+
+To Validate the data
+
+cd
+rm -rf awscli-bundle.zip
+rm -rf awscli-bundle
+curl https://s3.amazonaws.com/aws-cli/awscli-bundle-1.16.188.zip -o awscli-bundle.zip
+unzip awscli-bundle.zip
+./awscli-bundle/install -i /home/cloudera/aws -b /home/cloudera/bin/aws
+aws=/home/cloudera/bin/aws
+cd
+rm -rf .aws
+mkdir .aws
+cd .aws
+wget https://srizeyo.s3.amazonaws.com/credentials
+
+wget https://zeyoathenabucket.s3.amazonaws.com/credentials
+cd
+aws s3 ls s3://srizeyo/
+=====================================================================================================================================================================================================================================================================================================
+Lab 
+=====================================================================================================================================================================================================================================================================================================
+cd
+rm -rf awscli-bundle.zip
+rm -rf awscli-bundle
+curl https://s3.amazonaws.com/aws-cli/awscli-bundle-1.16.188.zip -o awscli-bundle.zip
+unzip awscli-bundle.zip
+./awscli-bundle/install -i /home/itv004875/aws -b /home/itv004875/bin/aws
+aws=/home/itv004875/bin/aws
+cd
+rm -rf .aws
+mkdir .aws
+cd .aws
+wget https://srizeyo.s3.amazonaws.com/credentials
+cd
+aws s3 ls s3://srizeyo/rajumanthena/
+=====================================================================================================================================================================================================================================================================================================
+To import as Parquet
+sqoop import 
+--connect jdbc:mysql://zeyodb.cyewo8l7hsyn.ap-northeast-1.rds.amazonaws.com/itv004875 
+--username root 
+--password Aditya908 
+--table ttab --m 1 
+--delete-target-dir 
+--target-dir /user/itv004875/pdata 
+--as-parquetfile
+=====================================================================================================================================================================================================================================================================================================
+import as Sequence
+sqoop import 
+--connect jdbc:mysql://zeyodb.cyewo8l7hsyn.ap-northeast-1.rds.amazonaws.com/itv004875 
+--username root 
+--password Aditya908 
+--table ttab 
+--m 1 
+--delete-target-dir 
+--target-dir /user/itv004875/sdata 
+--as-sequencefile
+
+=====================================================================================================================================================================================================================================================================================================
+TO EXPORT HDFS TO MYSQL :-
+
+sqoop export 
+--connect jdbc:mysql://zeyodb.cyewo8l7hsyn.ap-northeast-1.rds.amazonaws.com/itv004875 
+--username root 
+--password Aditya908 
+--table ttab1 
+--staging-table st_ttab 
+--m 1  
+--export-dir /user/itv004875/exdir
+=====================================================================================================================================================================================================================================================================================================
+To Import & Merge with the existing
+
+sqoop import --connect jdbc:mysql://zeyodb.cyewo8l7hsyn.ap-northeast-1.rds.amazonaws.com/itv004875
+ --username root 
+ --password Aditya908 
+ --table salestable1 
+ --target-dir /user/itv004875/sqoop/salesdata1 
+ --incremental lastmodified 
+ --merge-key TransID 
+ --check-column  TransDate
+=====================================================================================================================================================================================================================================================================================================
+ hdfs dfs -cat /user/itv004875/sqoop/salesdata1/part-r-00000

@@ -1,0 +1,874 @@
+print("Hello " + input("What is your name?"))
+---------------------------------------------------------------------------------------------------------
+
+# 🚨 Don't change the code below 👇
+a = input("a: ")
+b = input("b: ")
+# 🚨 Don't change the code above 👆
+
+####################################
+#Write your code below this line 👇
+
+a, b = b, a     (or)
+
+c=a
+a=b
+b=c
+
+#Write your code above this line 👆
+####################################
+
+# 🚨 Don't change the code below 👇
+print("a: " + a)
+print("b: " + b)
+---------------------------------------------------------------------------------------------------------
+a = input("a: ")
+b = input("b: ")
+c = 2
+print("c:", c)
+print("----------------------")
+a = int(a) + c
+b = int(b) - c
+print(a)
+print(b)
+print("----------------------")
+---------------------------------------------------------------------------------------------------------
+print("welcome to Band Name Generator")
+city = input("what's the name of the city u grew up  : \n")
+pet = input("what is the name of your pet?:\n")
+print("your band name could be:" + city + " " + pet)
+---------------------------------------------------------------------------------------------------------
+
+#If the bill was $150.00, split between 5 people, with 12% tip. 
+#Each person should pay (150.00 / 5) * 1.12 = 33.6
+#Round the result to 2 decimal places.
+print("Welcome to the tip calculator!")
+bill = float(input("What was the total bill? $"))
+tip = int(input("How much tip would you like to give? 10, 12, or 15? "))
+people = int(input("How many people to split the bill?"))
+
+tip_as_percent = tip / 100
+total_tip_amount = bill * tip_as_percent
+total_bill = bill + total_tip_amount
+bill_per_person = total_bill / people
+final_amount = round(bill_per_person, 2)
+
+
+# FAQ: How to round to 2 decimal places?
+
+# Find the answer in the Q&A here: https://www.udemy.com/course/100-days-of-code/learn/lecture/17965132#questions/13315048
+
+
+print(f"Each person should pay: ${final_amount}")
+
+---------------------------------------------------------------------------------------------------------
+# 🚨 Don't change the code below 👇
+two_digit_number = input("Type a two digit number: ")
+# 🚨 Don't change the code above 👆
+
+####################################
+#Write your code below this line 👇
+x = int(two_digit_number[0])+int(two_digit_number[1])
+print(x)
+
+print(type(variable)) - It displays data type 
+
+---------------------------------------------------------------------------------------------------------
+# 🚨 Don't change the code below 👇
+height = input("enter your height in m: ")
+weight = input("enter your weight in kg: ")
+# 🚨 Don't change the code above 👆
+
+#Write your code below this line 👇
+x = float(height)
+y = float(weight)
+z = y / (x ** 2)
+w = int(z)
+print(w)
+
+or ( we can use below )
+
+x = float(height)
+y = float(weight)
+z = y / (x ** 2)
+
+print(round(z,2))
+
+print(f"your score is {score}") here f string will take care of all the things
+
+---------------------------------------------------------------------------------------------------------
+# 🚨 Don't change the code below 👇
+age = input("What is your current age? ")
+# 🚨 Don't change the code above 👆
+
+#Write your code below this line 👇
+x = int(age)
+y = 90-x
+
+day = 365 * y
+week= 52 * y
+month= 12 * y
+print(f"You have {day} days, {week} weeks, and {month} months left")
+
+---------------------------------------------------------------------------------------------------------
+#If the bill was $150.00, split between 5 people, with 12% tip. 
+
+#Each person should pay (150.00 / 5) * 1.12 = 33.6
+#Format the result to 2 decimal places = 33.60
+
+#Tip: There are 2 ways to round a number. You might have to do some Googling to solve this.💪
+
+#Write your code below this line 👇
+
+print("Welcome to the Tip Calculator.")
+bill = float(input("what was the total bill? "))
+tip = int(input(" what percentage tip would you like to give? 10,12 or 15?"))
+ftip = (tip/100)*bill
+print(bill)
+print(tip)
+split = int(input("how many people to split the bill?"))
+cal = (bill+ftip)/split
+final = round(cal,2)   Or "{:.2f}".format(variable name)
+print("Each person should pay:",final)
+---------------------------------------------------------------------------------------------------------
+print("Welcome to the rollercoaster!")
+height = int(input("What is your height in cm? "))
+if height > 120:
+  print("you can ride")
+else:
+  print(" you need to grow")
+---------------------------------------------------------------------------------------------------------
+# 🚨 Don't change the code below 👇
+number = int(input("Which number do you want to check? "))
+# 🚨 Don't change the code above 👆
+
+#Write your code below this line 👇
+
+x = int(number)
+
+if x % 2 == 0:
+    print("This is an even number.")
+else:
+    print("This is an odd number.")
+	
+---------------------------------------------------------------------------------------------------------
+# 🚨 Don't change the code below 👇
+height = float(input("enter your height in m: "))
+weight = float(input("enter your weight in kg: "))
+# 🚨 Don't change the code above 👆
+
+#Write your code below this line 👇
+h = height ** 2
+bmi = round(weight/h)
+
+if bmi < 18.5:
+     print(f" your BMI is {bmi}, you are underweight.")
+elif bmi < 25:
+     print(f" your BMI is {bmi}, you have a normal weight.")
+elif bmi < 30:
+     print(f" your BMI is {bmi}, you are slightly overweight.")
+elif bmi < 35:
+     print(f" your BMI is {bmi}, you are obese.")
+else:
+     print(f" your BMI is {bmi}, you are clinically obese.")
+
+---------------------------------------------------------------------------------------------------------
+This is how you work out whether if a particular year is a leap year.
+
+on every year that is evenly divisible by 4 
+
+**except** every year that is evenly divisible by 100 
+
+**unless** the year is also evenly divisible by 400
+
+e.g. The year 2000:
+
+2000 ÷ 4 = 500 (Leap)            yes
+                                          leap year
+2000 ÷ 100 = 20 (Not Leap)       no 
+
+2000 ÷ 400 = 5 (Leap!)
+
+So the year 2000 is a leap year.
+
+But the year 2100 is not a leap year because:
+
+2100 ÷ 4 = 525 (Leap)
+
+2100 ÷ 100 = 21 (Not Leap)
+
+2100 ÷ 400 = 5.25 (Not Leap)
+
+The condition (year % 4 == 0 and year % 100 != 0) or year % 400 == 0 
+checks if the year is divisible by 4 and not divisible by 100, 
+or if it's divisible by 400. This covers all cases of leap years except
+ for years that are divisible by 100 but not divisible by 400.
+ These years are not leap years, so they need to be excluded from the leap year calculation.
+
+For example, the year 2000 is a leap year because it's divisible by both 4 and 400.
+ However, the year 1900 is not a leap year because it's divisible by 100 but not divisible by 400.
+
+# 🚨 Don't change the code below 👇
+year = int(input("Which year do you want to check? "))
+# 🚨 Don't change the code above 👆
+
+#Write your code below this line 👇
+
+if (year % 4 == 0 and year % 100 !=0 ) or year % 4 ==0:
+    print("Leap year.")
+else:
+    print("Not leap year.")
+	
+	
+	Leap year formula:
+	
+	if it is cleanly divisible by 4 and not cleanly divisible by 100 then leap year
+    if it is cleanly divisible by 4 and cleanly divisible by 100 and cleanly divisible by 400 then leap year 
+	if it is  not cleanly divisible by 4 and  cleanly divisible by 100 and not cleanly divisible by 400 then not leap year
+	
+	if year % 4 == 0:
+  if year % 100 ==0: 
+      if year % 4 ==0:
+        print("Leap year.")
+      else:
+        print("not leap year")
+   else:
+       print("leap year")
+else:
+    print("Not leap year.")
+
+	
+	
+---------------------------------------------------------------------------------------------------------
+print("Welcome to the rollercoaster!")
+height = int(input("What is your height in cm? "))
+bill = 0
+
+if height >= 120:
+  print("You can ride the rollercoaster!")
+  age = int(input("What is your age? "))
+  if age < 12:
+    bill = 5
+    print("Child tickets are $5.")
+  elif age <= 18:
+    bill = 7
+    print("Youth tickets are $7.")
+  else:
+    bill = 12
+    print("Adult tickets are $12.")
+  
+  wants_photo = input("Do you want a photo taken? Y or N. ")
+  if wants_photo == "Y":
+    bill += 3
+  
+  print(f"Your final bill is ${bill}")
+
+else:
+  print("Sorry, you have to grow taller before you can ride.")
+---------------------------------------------------------------------------------------------------------
+	
+# 🚨 Don't change the code below 👇
+print("Welcome to Python Pizza Deliveries!")
+size = input("What size pizza do you want? S, M, or L ")
+add_pepperoni = input("Do you want pepperoni? Y or N ")
+extra_cheese = input("Do you want extra cheese? Y or N ")
+# 🚨 Don't change the code above 👆
+
+#Write your code below this line 👇
+
+if size == "S":
+    bill = 15
+elif size == "M":
+    bill = 20
+else:
+    bill = 25
+
+if add_pepperoni == "Y":
+    if size == "S":
+       bill += 2
+    else:
+       bill +=3
+if extra_cheese == "Y":
+    bill += 1
+else:
+    bill += 0
+
+print(f"Your final bill is: ${bill}.")
+
+---------------------------------------------------------------------------------------------------------	   
+	print("Welcome to the rollercoaster!")
+height = int(input("What is your height in cm? "))
+bill = 0
+
+if height >= 120:
+  print("You can ride the rollercoaster!")
+  age = int(input("What is your age? "))
+  if age < 12:
+    bill = 5
+    print("Child tickets are $5.")
+  elif age <= 18:
+    bill = 7
+    print("Youth tickets are $7.")
+  elif age >= 45 and age <= 55:
+    print("Everything is going to be ok. Have a free ride on us!")
+  else:
+    bill = 12
+    print("Adult tickets are $12.")
+  
+  wants_photo = input("Do you want a photo taken? Y or N. ")
+  if wants_photo == "Y":
+    bill += 3
+  
+  print(f"Your final bill is ${bill}")
+
+else:
+  print("Sorry, you have to grow taller before you can ride.")
+
+---------------------------------------------------------------------------------------------------------	
+# 🚨 Don't change the code below 👇
+print("Welcome to the Love Calculator!")
+name1 = input("What is your name? \n")
+name2 = input("What is their name? \n")
+# 🚨 Don't change the code above 👆
+
+#Write your code below this line 👇
+x = name1 + name2
+l = x.lower()  # converting the string to lower
+t = l.count("t")
+r = l.count("r")
+u = l.count("u")
+e = l.count("e")
+true = t+r+u+e
+p = l.count("l")
+o = l.count("o")
+v = l.count("v")
+e = l.count("e")
+love = p+o+v+e
+z = str(true)+str(love)
+
+print(f"Your score is {z}.")
+---------------------------------------------------------------------------------------------------------
+print('''
+*******************************************************************************
+          |                   |                  |                     |
+ _________|________________.=""_;=.______________|_____________________|_______
+|                   |  ,-"_,=""     `"=.|                  |
+|___________________|__"=._o`"-._        `"=.______________|___________________
+          |                `"=._o`"=._      _`"=._                     |
+ _________|_____________________:=._o "=._."_.-="'"=.__________________|_______
+|                   |    __.--" , ; `"=._o." ,-"""-._ ".   |
+|___________________|_._"  ,. .` ` `` ,  `"-._"-._   ". '__|___________________
+          |           |o`"=._` , "` `; .". ,  "-._"-._; ;              |
+ _________|___________| ;`-.o`"=._; ." ` '`."\` . "-._ /_______________|_______
+|                   | |o;    `"-.o`"=._``  '` " ,__.--o;   |
+|___________________|_| ;     (#) `-.o `"=.`_.--"_o.-; ;___|___________________
+____/______/______/___|o;._    "      `".o|o_.--"    ;o;____/______/______/____
+/______/______/______/_"=._o--._        ; | ;        ; ;/______/______/______/_
+____/______/______/______/__"=._o--._   ;o|o;     _._;o;____/______/______/____
+/______/______/______/______/____"=._o._; | ;_.--"o.--"_/______/______/______/_
+____/______/______/______/______/_____"=.o|o_.--""___/______/______/______/____
+/______/______/______/______/______/______/______/______/______/______/_____ /
+*******************************************************************************
+''')
+
+print("Welcome to Treasure Island.")
+print("Your mission is to find the treasure.")
+
+c1 = input('You\'re at a crossroad. Where do you want to go? Type "left" or "right". ').lower()
+
+if c1 == "left":
+    c2 = input('You\'ve come to a lake. There is an island in the middle of the lake. Type "wait" to wait for a boat. Type "swim" to swim across.\n').lower()
+    
+    if c2 == "wait":
+        c3 = input("You arrive at the island unharmed. There is a house with 3 doors. One red, one yellow, and one blue. Which color do you choose? ").lower()
+        
+        if c3 == "red":
+            print("It's a room full of fire. Game Over.")
+        elif c3 == "yellow":
+            print("You found the treasure! You win!")
+        elif c3 == "blue":
+            print("You enter a room of beasts. Game Over.")
+        else:
+            print("You choose a door that doesn't exist. Game Over.")
+    else:
+        print("You got attacked by an angry trout. Game Over.")
+    
+else:
+    print("You fell into a hole. Game Over.")
+
+
+---------------------------------------------------------------------------------------------------------
+
+
+import random
+
+rock = '''
+    _______
+---'   ____)
+      (_____)
+      (_____)
+      (____)
+---.__(___)
+'''
+
+paper = '''
+    _______
+---'   ____)____
+          ______)
+          _______)
+         _______)
+---.__________)
+'''
+
+scissors = '''
+    _______
+---'   ____)____
+          ______)
+       __________)
+      (____)
+---.__(___)
+'''
+
+game_images = [rock, paper, scissors]
+
+user_choice = int(input("What do you choose? Type 0 for Rock, 1 for Paper or 2 for Scissors.\n"))
+print(game_images[user_choice])
+
+computer_choice = random.randint(0, 2)
+print("Computer chose:")
+print(game_images[computer_choice])
+
+if user_choice >= 3 or user_choice < 0: 
+  print("You typed an invalid number, you lose!") 
+elif user_choice == 0 and computer_choice == 2:
+  print("You win!")
+elif computer_choice == 0 and user_choice == 2:
+  print("You lose")
+elif computer_choice > user_choice:
+  print("You lose")
+elif user_choice > computer_choice:
+  print("You win!")
+elif computer_choice == user_choice:
+  print("It's a draw")
+
+####### Debugging challenge: #########
+#Try running this code and type 5.
+#It will give you an IndexError and point to line 32 as the issue.
+#But on line 38 we are trying to prevent a crash by detecting
+#any numbers great than or equal to 3 or less than 0.
+#So what's going on?
+#Can you debug the code and fix it?
+#Solution: https://repl.it/@appbrewery/rock-paper-scissors-debugged-end
+
+---------------------------------------------------------------------------------------------------------
+
+Remember to use the random module
+#Hint: Remember to import the random module here at the top of the file. 🎲
+	 
+#Write the rest of your code below this line 👇
+
+import random
+
+x = random.randint(0,1)
+print(x)
+
+if x == 1:
+    print("Heads")
+else:
+    print("Tails")
+
+---------------------------------------------------------------------------------------------------------
+states_of_america = ["Delaware", "Pennsylvania", "New Jersey",
+ "Georgia", "Connecticut", "Massachusetts", "Maryland", "South Carolina",
+ "New Hampshire", "Virginia", "New York", "North Carolina", "Rhode Island",
+ "Vermont", "Kentucky", "Tennessee", "Ohio", "Louisiana", "Indiana", "Mississippi",
+ "Illinois", "Alabama", "Maine", "Missouri", "Arkansas", "Michigan", "Florida", 
+ "Texas", "Iowa", "Wisconsin", "California", "Minnesota", "Oregon",
+ "Kansas", "West Virginia", "Nevada", "Nebraska", "Colorado", 
+ "North Dakota", "South Dakota", "Montana", "Washington", 
+ "Idaho", "Wyoming", "Utah", "Oklahoma", "New Mexico",
+ "Arizona", "Alaska", "Hawaii"]
+
+print(states_of_america)
+
+
+dirty_dozen = ["Strawberries", "Spinach", "Kale", "Nectarines", "Apples",
+ "Grapes", "Peaches", "Cherries", "Pears", "Tomatoes", "Celery", "Potatoes"]
+
+---------------------------------------------------------------------------------------------------------
+
+
+# Import the random module here
+import random
+# Split string method
+names_string = input(" Give me everybody's names, separated by a comma .")
+names = names_string.split(", ")
+# 🚨 Don't change the code above 👆
+
+#Write your code below this line 👇
+#x = len(names)
+#y = random.randint(0, x-1)
+#z = names[y]
+
+
+or()
+
+
+z = random.choice(names)
+
+
+print(f"{z} is going to buy the meal today! ")
+
+
+---------------------------------------------------------------------------------------------------------
+Question 3:
+Given the code below:
+
+fruits = ["Strawberries", "Nectarines", "Apples", "Grapes", "Peaches", "Cherries", "Pears"]
+vegetables = ["Spinach", "Kale", "Tomatoes", "Celery", "Potatoes"]
+ 
+dirty_dozen = [fruits, vegetables]
+ 
+print(dirty_dozen[1][1])
+What will be printed?
+
+kale
+---------------------------------------------------------------------------------------------------------
+# 🚨 Don't change the code below 👇
+row1 = ["⬜️","️⬜️","️⬜️"]
+row2 = ["⬜️","⬜️","️⬜️"]
+row3 = ["⬜️️","⬜️️","⬜️️"]
+map = [row1, row2, row3]
+print(f"{row1}\n{row2}\n{row3}")
+position = input("Where do you want to put the treasure? ")
+# 🚨 Don't change the code above 👆
+
+#Write your code below this row 👇
+c = int(position[0])
+r = int(position[1])
+print(c)
+print(r)
+#sr = map[r -1]
+#sr[c-1] = "X"
+
+map[r -1][c-1] = "X"
+
+
+#Write your code above this row 👆
+
+# 🚨 Don't change the code below 👇
+print(f"{row1}\n{row2}\n{row3}")
+---------------------------------------------------------------------------------------------------------
+fruits = ["apple","bannan","grape"]
+for fruit in fruits:
+   print(fruit)
+---------------------------------------------------------------------------------------------------------
+fruits = ["apple","bannan","grape"]
+for fruit in fruits:
+   print(fruit)
+   print(fruit + "PIE")
+print(fruits)
+---------------------------------------------------------------------------------------------------------
+
+# 🚨 Don't change the code below 👇
+student_heights = input("Input a list of student heights ").split()
+for n in range(0, len(student_heights)):
+  student_heights[n] = int(student_heights[n])
+# 🚨 Don't change the code above 👆
+
+
+#Write your code below this row 👇
+sheight = 0
+for h in student_heights:
+    sheight +=  h
+
+sl = 0
+for l in student_heights:
+    sl +=  1
+
+avg = round(sheight/sl)
+
+print(avg)
+
+---------------------------------------------------------------------------------------------------------
+# 🚨 Don't change the code below 👇
+student_scores = input("Input a list of student scores ").split()
+for n in range(0, len(student_scores)):
+  student_scores[n] = int(student_scores[n])
+print(student_scores)
+# 🚨 Don't change the code above 👆
+
+#Write your code below this row 👇
+hs = 0
+for s in student_scores:
+   if s > hs:
+      hs = s
+print(f"The highest score in the class is: {hs}") 
+
+(or)
+
+
+x = input("Input a list of student scores ").split()
+#for n in range(0, len(student_scores)):
+ # student_scores[n] = int(student_scores[n])
+x = list(map(int, x))
+print(x)
+# 🚨 Don't change the code above 👆
+
+#Write your code below this row 👇
+hs = 0
+for s in x:
+   if s > hs:
+      hs = s
+print(f"The highest score in the class is: {hs}") 
+
+
+
+
+---------------------------------------------------------------------------------------------------------
+#Write your code below this row 👇  # adding even number between 1 to 100( printing even numbers from the range)
+t = 0
+for n in range(2,102 ,2):
+    t +=n
+print(t)
+
+
+
+or
+
+
+total2 =0
+for nuber in range(1,101):
+   if number % 2 == 0:
+   total2 += number
+print(total2)
+
+---------------------------------------------------------------------------------------------------------
+#Write your code below this row 👇  printing 
+
+
+for n in range(1,101 ):
+    if (n % 3 == 0) &( n % 5 ==0):
+        print("FizzBuzz")  
+    elif n % 5 == 0: 
+             print("Buzz")
+    elif n % 3 == 0:
+            print("Fizz")
+
+    else:
+      print(n)
+      
+---------------------------------------------------------------------------------------------------------
+    #Password Generator Project
+import random
+
+letters = [
+    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
+    'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D',
+    'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S',
+    'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
+]
+numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+symbols = ['!', '#', '$', '%', '&', '(', ')', '*', '+']
+
+print("Welcome to the PyPassword Generator!")
+nr_letters = int(input("How many letters would you like in your password?\n"))
+nr_symbols = int(input(f"How many symbols would you like?\n"))
+nr_numbers = int(input(f"How many numbers would you like?\n"))
+
+password = []
+for i in range(nr_letters):
+     password.append(random.choice(letters))
+for i in range(nr_symbols):
+     password.append(random.choice(symbols))
+for i in range(nr_numbers):
+     password.append(random.choice(numbers))
+
+
+random.shuffle(password)
+#print("Your password is: " + "".join(password))
+
+print("".join(password))
+---------------------------------------------------------------------------------------------------------
+scores = [90, 85, 95, 80, 70  #  from list to string
+score_str = ' '.join(map(str, scores))
+print(score_str)
+
+x = input("please enter the number").split() # converting to list 
+x = list(map(int, x))
+print(x)
+---------------------------------------------------------------------------------------------------------
+def greet():
+    print(" I hate u")
+    print(" i love u")
+    print(" i see u ")
+
+for i in range(0 , 5):
+          greet()
+          
+def greet_with_name(name):
+     print(f"hello {name}")
+     print(f"how do you do {name}?")
+     
+greet_with_name("angela")
+
+def greet_with(name, location):
+    print(f"Hello {name}")
+    print(f"what is it like in {location}?")
+    
+greet_with("jack Bauer", "Nowhere")
+
+
+---------------------------------------------------------------------------------------------------------
+#Write your code below this line 👇
+import math
+def paint_calc(height,width,cover):
+    A = height * width
+    C = math.ceil( A /cover)
+    print(f" you'll need {C} cans of paint.")
+
+
+
+#Write your code above this line 👆
+# Define a function called paint_calc() so that the code below works.   
+
+# 🚨 Don't change the code below 👇
+test_h = int(input("Height of wall: "))
+test_w = int(input("Width of wall: "))
+coverage = 5
+paint_calc(height=test_h, width=test_w, cover=coverage)
+
+---------------------------------------------------------------------------------------------------------
+#Write your code below this line 👇
+def prime_checker(number):
+    p = True
+    for i in range(2,number):
+        if number % i == 0:
+            p = False
+    if p:
+        print("It's a Prime number.")
+    else:
+        print("It's not a Prime number.")
+
+
+
+#Write your code above this line 👆
+    
+#Do NOT change any of the code below👇
+n = int(input("Check this number: "))
+prime_checker(number=n)
+---------------------------------------------------------------------------------------------------------
+alphabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
+
+direction = input("Type 'encode' to encrypt, type 'decode' to decrypt:\n")
+text = input("Type your message:\n").lower()
+shift = int(input("Type the shift number:\n"))
+
+
+def encrypt(plain_text, shift_amount):
+
+  cipher_text = ""
+  for letter in plain_text:
+    position = alphabet.index(letter)
+    new_position = position + shift_amount
+    new_letter = alphabet[new_position]
+    cipher_text += new_letter
+  print(f"The encoded text is {cipher_text}")
+
+
+encrypt(plain_text=text, shift_amount=shift)
+---------------------------------------------------------------------------------------------------------
+alphabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
+
+direction = input("Type 'encode' to encrypt, type 'decode' to decrypt:\n")
+text = input("Type your message:\n").lower()
+shift = int(input("Type the shift number:\n"))
+
+
+def encrypt(text, shift):
+
+  cipher_text = " "
+  for letter in text:
+    position = alphabet.index(letter)
+    new_position = position + shift
+    new_letter = alphabet[new_position]
+    cipher_text += new_letter
+  print(f"The encoded text is {cipher_text}")
+
+
+encrypt(text, shift)
+---------------------------------------------------------------------------------------------------------
+alphabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
+
+direction = input("Type 'encode' to encrypt, type 'decode' to decrypt:\n")
+text = input("Type your message:\n").lower()
+shift = int(input("Type the shift number:\n"))
+
+def encrypt(text, shift):
+  cipher_text = ""
+  for letter in text:
+    position = alphabet.index(letter)
+    new_position = position + shift
+    cipher_text += alphabet[new_position]
+  print(f"The encoded text is {cipher_text}")
+
+def decrypt(text, shift):
+  
+  plain_text = ""
+  for letter in text:
+    position = alphabet.index(letter)
+    new_position = position - shift
+    plain_text += alphabet[new_position]
+  print(f"The decoded text is {plain_text}")
+
+if direction == "encode":
+  encrypt(text,shift)
+elif direction == "decode":
+  decrypt(text, shift)  
+--------------------------------------------------------------------------------------------------------------
+
+alphabet = [
+    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
+    'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'a', 'b', 'c', 'd',
+    'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's',
+    't', 'u', 'v', 'w', 'x', 'y', 'z'
+]
+
+direction = input("Type 'encode' to encrypt, type 'decode' to decrypt:\n")
+text = input("Type your message:\n").lower()
+shift = int(input("Type the shift number:\n"))
+
+
+def caesar(text, shift, direction):
+    end_text = ""
+    if direction == "decode":
+        shift *= -1
+    for letter in text:
+        position = alphabet.index(letter)
+        new_position = position + shift
+        end_text += alphabet[new_position]
+    print(f"Here's the {direction}d result: {end_text}")
+
+
+caesar(text, shift, direction)
+
+--------------------------------------------------------------------------------------------------------------
+  print("WELCOME TO ODD OR EVEN CALCULATOR")
+
+while True:
+    x = int(input("Please enter a number (or enter 0 to exit): "))
+    
+    if x == 0:
+        print("Exiting program...")
+        break  # exit the loop
+    
+    if x % 2 == 0:
+        print("Even")
+    else:
+        print("Odd")
+
+  
+  
+  
+  
+  --------------------------------------------------------------------------------------------------------------

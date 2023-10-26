@@ -1,0 +1,133 @@
+import subprocess
+from google.cloud import storage
+
+# Set the MySQL database credentials
+db_user = "root"
+db_password = "Aditya908"
+db_host = "zeyodb.cz7qhc39aphp.ap-south-1.rds.amazonaws.com"
+db_name = "zeyodb"
+table_name = "salesdata"
+
+# Use the mysqldump command to export the MySQL data to a file
+dump_command = f"mysqldump -u {db_user} -p{db_password} -h {db_host} {db_name} {table_name} > {table_name}.sql"
+subprocess.run(dump_command, shell=True, check=True)
+
+# Upload the file to the GCP Storage bucket
+storage_client = storage.Client()
+bucket_name = "your-bucket-name"
+bucket = storage_client.bucket(bucket_name)
+blob = bucket.blob(f"{table_name}.sql")
+blob.upload_from_filename(f"{table_name}.sql")
+
+---------------------------------------------------------------------------------------------------------
+from dkutils.validation import validate_globals
+
+try:
+
+success == False
+
+forecasted_sales_len = -1
+
+min_forecast_sales = None
+
+max_forecast_sales = None
+
+validate_globals ( [
+
+])
+
+'MODEL_FILENAME',
+
+'DATA_FOR_FORECASTING_FILENAME',
+
+'FEATURES',
+
+'FORECASTED_SALES_FILENAME'
+
+#Load the model
+
+model =
+
+joblib.load(f'docker-share/{MODEL_FILENAME}')
+
+# Load the data and predict sales
+
+all_data_df = pd. read_csv (f'docker-share/{DATA_FOR_FORECASTING_FILENAME}')
+
+feature_data_df = all_data_df.loc[:, FEATURES]
+
+forecasted_sales = model.predict (feature_data_df)
+
+min_forecast sales = forecasted_sales.min()
+
+max_forecast_sales = forecasted_sales.max ( )
+
+forecasted_sales_len = len (forecasted_sales)
+
+all_data_df.insert (4, 'forecasted_weekly_sales', forecasted_sales.tolist())
+
+all_data_df.to_csv (f'docker-share/{FORECASTED_SALES_FILENAME}', index=False)
+
+success = True
+
+except Exception as e:
+
+LOGGER.error (f'Model forecasting failed: \n{traceback. format_exc()}')
+
+---------------------------------------------------------------------------------------------------------
+rom dkutils.validation import validate_globals: The code imports a function called validate_globals 
+from a Python module called dkutils.validation. It's not clear what this function does, but we'll 
+assume it checks that some global variables have valid values.
+
+try: ... except Exception as e: ...: The code sets up a try-except block, which means that it will 
+attempt to run the code inside the "try" block, and if any exceptions (errors) occur, it will run
+ the code inside the "except" block instead. If an exception occurs, it will be stored in the 
+ variable e.
+
+success == False: The code initializes a variable called success and sets its value to False. 
+It seems like this variable will be used later to indicate whether the code succeeded or failed.
+
+forecasted_sales_len = -1: The code initializes a variable called forecasted_sales_len and sets 
+its value to -1.
+
+min_forecast_sales = None: The code initializes a variable called min_forecast_sales and sets 
+its value to None.
+
+max_forecast_sales = None: The code initializes a variable called max_forecast_sales and sets 
+its value to None.
+
+validate_globals([...]): The code calls the validate_globals function and passes it a list of
+ global variable names (which appear to be missing from the code snippet you provided). It's not 
+ clear what this function does, but we'll assume it checks that the variables in the list have valid 
+ values.
+
+'MODEL_FILENAME', ... 'FORECASTED_SALES_FILENAME': This line seems to be part of the list of
+ global variable names being passed to validate_globals. It's not clear why the list is split
+ across multiple lines like this.
+
+model = joblib.load(f'docker-share/{MODEL_FILENAME}'): The code loads a machine learning model
+ from a file called MODEL_FILENAME, which is presumably located in a directory called docker-share. 
+ It uses the joblib.load function from the joblib module to do this. The loaded model is assigned
+ to a variable called model.
+
+all_data_df = pd.read_csv(f'docker-share/{DATA_FOR_FORECASTING_FILENAME}'): The code loads a CSV
+ file called DATA_FOR_FORECASTING_FILENAME, which is also presumably located in the docker-share 
+ directory. It uses the pd.read_csv function from the pandas module to do this. The loaded data 
+ is assigned to a variable called all_data_df.
+
+feature_data_df = all_data_df.loc[:, FEATURES]: The code selects a subset of the loaded data
+ using the loc method of the all_data_df DataFrame. It selects all rows (:) and the columns 
+ specified in the FEATURES list. The resulting DataFrame is assigned to a variable called
+ feature_data_df.
+
+forecasted_sales = model.predict(feature_data_df): The code uses the predict method of the 
+model object to generate sales forecasts based on the feature_data_df. The resulting forecasts
+ are assigned to a variable called forecasted_sales.
+
+min_forecast_sales = forecasted_sales.min(): The code calculates the minimum forecasted sales
+ value by calling the min method on the forecasted_sales array. The resulting minimum value is 
+ assigned to a variable called min_forecast_sales.
+
+max_forecast_sales = forecasted_sales.max(): The code calculates the maximum forecasted sales 
+value by calling the max
+---------------------------------------------------------------------------------------------------------

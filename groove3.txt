@@ -1,0 +1,438 @@
+
+
+import groovy.sql.Sql
+
+// Get basic info
+def hostname = hostProps.get("system.hostname")
+def sqlInstances = hostProps.get("mssql.sql_server_instances") ?: hostProps.get("auto.sql_server_instances")  // override sql instances with manual instances
+Boolean debug = false
+
+
+
+LMDebugPrint("***** Running Databases Collect *****", debug)
+LMDebugPrint("\tSQL Instances ${sqlInstances}", debug)
+
+if (sqlInstances)
+{
+    sqlInstances.toString().tokenize(",").each
+    { instanceName -> instanceName = instanceName.trim()
+        LMDebugPrint("\tInstance Name ${instanceName}", debug)
+        def jdbcConnectionString = hostProps.get("mssql.${instanceName.toLowerCase()}.mssql_url") ?: hostProps.get("auto.${instanceName.toLowerCase()}.mssql_url")
+        def user = hostProps.get("mssql.${instanceName.toLowerCase()}.user") ?: hostProps.get("jdbc.mssql.user") ?: ""
+        def pass = hostProps.get("mssql.${instanceName.toLowerCase()}.pass") ?: hostProps.get("jdbc.mssql.pass") ?: ""
+        LMDebugPrint("\tJDBC Connection String  ${jdbcConnectionString}", debug)
+        // ensure we dont have any null's
+        if (jdbcConnectionString)
+        {
+            def conn = attemptConnection(user, pass, jdbcConnectionString, debug)  //create a connection
+            LMDebugPrint("Did this connect:  $conn.connection", debug)
+            if (conn.status == "success")
+            {
+
+                def sqlQuery = """SELECT
+                                  a.name,
+                                  a.state,
+                                  a.target_recovery_time_in_seconds,
+                                  a.snapshot_isolation_state,
+                                  a.is_sync_with_backup,
+                                  a.database_id,
+                                  db_row_size,
+                                  db_row_max_size,
+                                  db_log_size,
+                                  db_log_max_size
+                                FROM sys.databases a
+                                LEFT OUTER JOIN (SELECT
+                                  database_id,
+                                  CASE
+                                    WHEN SUM(CONVERT(bigint, size)) = -1 THEN -1
+                                    ELSE SUM(CONVERT(bigint, size)) * 8 * 1024
+                                  END AS db_row_size,
+                                  CASE
+                                    WHEN SUM(CONVERT(bigint, max_size)) = -1 THEN -1
+                                    ELSE SUM(CONVERT(bigint, max_size)) * 8 * 1024
+                                  END AS db_row_max_size
+                                FROM sys.master_files
+                                WHERE type_desc = 'ROWS'
+                                GROUP BY database_id) c
+                                  ON a.database_id = c.database_id
+                                LEFT OUTER JOIN (SELECT
+                                  database_id,
+                                  CASE
+                                    WHEN SUM(CONVERT(bigint, size)) = -1 THEN -1
+                                    ELSE SUM(CONVERT(bigint, size)) * 8 * 1024
+                                  END AS db_log_size,
+                                  CASE
+                                    WHEN SUM(CONVERT(bigint, max_size)) = -1 THEN -1
+                                    ELSE SUM(CONVERT(bigint, max_size)) * 8 * 1024
+                                  END AS db_log_max_size
+                                FROM sys.master_files
+                                WHERE type_desc = 'LOG'
+                                GROUP BY database_id) d
+                                  ON a.database_id = d.database_id"""
+
+                def outputRecords = runQuery(sqlQuery, conn.connection, debug)
+                LMDebugPrint("Output Record Status : ${outputRecords.status} ", debug)
+                if (outputRecords.status != 'success')
+                {
+                    //older versions of SQL are missing target_recover_time_in_seconds
+                    sqlQuery = """SELECT
+                                  a.name,
+                                  a.state,
+                                  a.snapshot_isolation_state,
+                                  a.is_sync_with_backup,
+                                  a.database_id,
+                                  db_row_size,
+                                  db_row_max_size,
+                                  db_log_size,
+                                  db_log_max_size
+                                FROM sys.databases a
+                                LEFT OUTER JOIN (SELECT
+                                  database_id,
+                                  CASE
+                                    WHEN SUM(CONVERT(bigint, size)) = -1 THEN -1
+                                    ELSE SUM(CONVERT(bigint, size)) * 8 * 1024
+                                  END AS db_row_size,
+                                  CASE
+                                    WHEN SUM(max_size) = -1 THEN -1
+                                    ELSE CONVERT(float, SUM(max_size)) * 8 * 1024
+                                  END AS db_row_max_size
+                                FROM sys.master_files
+                                WHERE type_desc = 'ROWS'
+                                GROUP BY database_id) c
+                                  ON a.database_id = c.database_id
+                                LEFT OUTER JOIN (SELECT
+                                  database_id,
+                                  CASE
+                                    WHEN SUM(CONVERT(bigint, size)) = -1 THEN -1
+                                    ELSE SUM(CONVERT(bigint, size)) * 8 * 1024
+                                  END AS db_log_size,
+                                  CASE
+                                    WHEN SUM(CONVERT(bigint, max_size)) = -1 THEN -1
+                                    ELSE SUM(CONVERT(bigint, max_size)) * 8 * 1024
+                                  END AS db_log_max_size
+                                FROM sys.master_files
+                                WHERE type_desc = 'LOG'
+                                GROUP BY database_id) d
+                                  ON a.database_id = d.database_id"""
+
+                    outputRecords = runQuery(sqlQuery, conn.connection, debug)
+                    LMDebugPrint("Output Record Status : ${outputRecords.status} ", debug)
+                }
+                def whereClause = ''  //where clause used for db_perf select statement
+
+                if (outputRecords.status == 'success')
+                {
+
+                    outputRecords.data.each
+                    { output ->
+                        LMDebugPrint("Database Name: $output.name ", debug)
+                        def name = output['name']
+                        def wildvalue = "${instanceName.replaceAll(/[:|\\|\s|=]+/, "_")}||${name.replaceAll(/[:|\\|\s|=]+/, "_")}";
+                        println "${wildvalue}.db_row_size=" + output.db_row_size
+                        println "${wildvalue}.db_row_max_size=" + output.db_row_max_size
+                        println "${wildvalue}.db_log_size=" + output.db_log_size
+                        println "${wildvalue}.db_log_max_size=" + output.db_log_max_size
+                        println "${wildvalue}.state=" + output['state']
+
+                        // not all databases will have the following datapoint.
+                        println "${wildvalue}.target_recovery_time_in_seconds=" + (output.hasProperty('target_recovery_time_in_seconds') ? output['target_recovery_time_in_seconds'] : null)
+                        println "${wildvalue}.snapshot_isolation_state=" + output['snapshot_isolation_state']
+                        println "${wildvalue}.sync_state=" + ((output['is_sync_with_backup'].toString() == 'true') ? 1 : 0)
+
+                        whereClause += '\'' + name + '\', '
+                    }
+                }
+                sqlQuery = """SELECT
+                                  instance_name,
+                                  case when counter_name = 'Repl. Trans. Rate' then 'replTransRate' else  REPLACE(counter_name, 'KB', 'bytes') end as counter_name,
+                                  CASE
+                                    WHEN CHARINDEX('KB', counter_name) > 1 THEN CONVERT(bigint, cntr_value) * 1024
+                                    WHEN counter_name = 'Bulk_Copy_Throughput_sec' THEN CONVERT(bigint, cntr_value) * 1024
+                                    ELSE cntr_value
+                                  END AS cntr_value
+                                
+                                FROM sys.dm_os_performance_counters
+                                pc
+                                INNER JOIN sys.databases db
+                                  ON db.name = pc.instance_name WHERE instance_name in (""" + whereClause.replaceAll(", \$", "") + ')'
+
+                db_perf = runQuery(sqlQuery, conn.connection, debug)
+                // iterate over all the performance metrics.
+                if (db_perf.status == "success")
+                {
+                    db_perf.data.each
+                    { output ->
+                        def db_name = output['instance_name'].trim()
+                        def counter = output['counter_name'].trim().replaceAll(/\s/, "_").replaceAll(/\//, "_").replaceAll("[()]", "")
+                        def cntr_value = output['cntr_value']
+                        def wildvalue = "${instanceName.replaceAll(/[:|\\|\s|=]+/, "_")}||${db_name.replaceAll(/[:|\\|\s|=]+/, "_")}";
+                        // Print it out.
+                        println "${wildvalue}.${counter}=${cntr_value}"
+                    }
+                }
+                // moved to the end since it sometimes times out.   Will skip if it times out.
+                // query to pull backup metrics.
+                def backup_query = """
+                                with getTime (DataBaseName, MaxDate)  as
+                                (select database_name as DatabaseName
+                                    , MAX(backup_finish_date) AS MaxDate
+                                from msdb.dbo.backupset
+                                group by database_name)
+                                select DataBaseName ,DATEDIFF(minute,MaxDate, CURRENT_TIMESTAMP) as diffMins  from getTime"""
+
+                db_backup = runQuery(backup_query, conn.connection, debug)
+                // run backup query against each database.
+                if (db_backup.status == "success")
+                {
+                    db_backup.data.each
+                    { output ->
+                        wildvalue = "${instanceName.replaceAll(/[:|\\|\s|=]+/, "_")}||${output['DataBaseName'].replaceAll(/[:|\\|\s|=]+/, "_")}"
+                        // print it out.
+                        println "${wildvalue}.minutes_since_last_backup=" + output['diffMins']
+                    }
+                }
+                conn.connection.close()
+            }
+        }
+
+    }
+}
+
+
+return 0
+
+
+/**
+ * Helper method to print out debug messages for troubleshooting purposes.
+ * @param message
+ * @param debug
+ * @return
+ */
+
+def LMDebugPrint(message, Boolean debug = false)
+{
+    if (debug)
+    {
+        println(message.toString())
+    }
+}
+
+
+/**
+ * Helper method which handles creating a connection to the jdbc database
+ * @returnArray is an array with a connection, status and any error messages an array.
+ *          *connection = jdbc connection
+ *          *status, success or fail
+ *          *errors, if both connection types fail there will be 2 error messages.
+ *
+ */
+def attemptConnection(String instanceUser, String instancePass, String instanceURL, Boolean debug = false)
+{
+    LMDebugPrint("**** Props to connect:", debug)
+    LMDebugPrint("\tuser:$instanceUser", debug)
+    LMDebugPrint("\tinstanceURL:$instanceURL", debug)
+    def returnArray = [:]
+    def errors = []
+    def connComplete
+    def db_connection
+
+    try
+    {
+        // Connection creation thrown into Try/Catch block as to quickly capture any issues with initial connection.
+        // Create a connection to the database.
+        String driver = "com.microsoft.sqlserver.jdbc.SQLServerDriver"
+        db_connection = Sql.newInstance(instanceURL, instanceUser, instancePass, driver)
+        connComplete = true
+
+    }
+    catch (Exception e)
+    {
+        // Print out the exception and exit with 1.
+        errors[0] = e.message
+        LMDebugPrint("***** Attempt Connection error: ${e.message}", debug)
+        connComplete = false
+    }
+
+    // populate the connection and any messages for the return array
+    if (connComplete == true)
+    {
+
+        returnArray['connection'] = db_connection
+        returnArray['status'] = 'success'
+    }
+    else
+    {
+        returnArray['status'] = 'failed'
+        returnArray['errors'] = errors
+        returnArray['connection'] = null
+    }
+
+    return returnArray
+
+}
+
+/*
+Attempt to execute SQL command.
+Returns an array.
+    the first element is the query data
+    second element is success or fail
+    third element is the error message
+ */
+
+def runQuery(String sqlQuery, conn, debug = false)
+{
+    def returnArray = [:]
+    LMDebugPrint("****Running Query****", debug)
+    LMDebugPrint("\tQuery to run: $sqlQuery", debug)
+    // query the Oracle DB.
+    try
+    {
+
+        returnArray['data'] = conn.rows(sqlQuery)
+        returnArray['status'] = 'success'
+        returnArray['error'] = ''
+    }
+    catch (Exception e)
+    {
+        returnArray['error'] = e.message
+        returnArray['status'] = 'failed'
+        LMDebugPrint("\tSQL Query Error message: ${e.message}", debug)
+    }
+    LMDebugPrint("Data Returned: ${returnArray.data}", debug)
+    return returnArray
+}
+================================================================================================
+import groovy.sql.Sql
+
+// Get basic info
+def hostname = hostProps.get("system.hostname")
+def sqlInstances = hostProps.get("sybase.sql_server_instances") ?: hostProps.get("auto.sql_server_instances")  // override sql instances with manual instances
+Boolean debug = false
+
+LMDebugPrint("***** Running Databases Collect *****", debug)
+LMDebugPrint("\tSQL Instances ${sqlInstances}", debug)
+
+if (sqlInstances) {
+    sqlInstances.toString().tokenize(",").each { instanceName ->
+        instanceName = instanceName.trim()
+        LMDebugPrint("\tInstance Name ${instanceName}", debug)
+        def jdbcConnectionString = hostProps.get("sybase.${instanceName.toLowerCase()}.sybase_url") ?: hostProps.get("auto.${instanceName.toLowerCase()}.sybase_url")
+        def user = hostProps.get("sybase.${instanceName.toLowerCase()}.user") ?: hostProps.get("jdbc.sybase.user") ?: ""
+        def pass = hostProps.get("sybase.${instanceName.toLowerCase()}.pass") ?: hostProps.get("jdbc.sybase.pass") ?: ""
+        LMDebugPrint("\tJDBC Connection String  ${jdbcConnectionString}", debug)
+        
+        // ensure we dont have any null's
+        if (jdbcConnectionString) {
+            def conn = attemptConnection(user, pass, jdbcConnectionString, debug)  //create a connection
+            LMDebugPrint("Did this connect:  $conn.connection", debug)
+            
+            if (conn.status == "success") {
+                def sqlQuery = """SELECT
+                    name,
+                    status = CONVERT(VARCHAR, status),
+                    recovery = CONVERT(VARCHAR, recovery),
+                    isolation_level,
+                    is_sync_with_backup,
+                    dbid,
+                    db_row_size = CONVERT(BIGINT, size),
+                    db_row_max_size = CONVERT(BIGINT, max_size),
+                    active_transactions = CONVERT(BIGINT, cntr_value),
+                    backup_restore_throughput = CONVERT(BIGINT, cntr_value),
+                    bulk_copy_rows = CONVERT(BIGINT, cntr_value),
+                    bulk_copy_throughput = CONVERT(BIGINT, cntr_value),
+                    data_file_size = CONVERT(BIGINT, size),
+                    log_bytes_flushed = CONVERT(BIGINT, cntr_value),
+                    log_cache_reads = CONVERT(BIGINT, cntr_value),
+                    log_cache_hit_ratio = CONVERT(BIGINT, cntr_value),
+                    b_log_max_size = CONVERT(BIGINT, cntr_value),
+                    db_log_size = CONVERT(BIGINT, cntr_value)
+                FROM master..sysdatabases d
+                JOIN sysperfinfo p ON d.dbid = p.dbid
+                WHERE p.object_name = 'SQLServer:Databases'
+                """
+                
+                def outputRecords = runQuery(sqlQuery, conn.connection, debug)
+                LMDebugPrint("Output Record Status : ${outputRecords.status} ", debug)
+                
+                if (outputRecords.status == 'success') {
+                    outputRecords.data.each { output ->
+                        LMDebugPrint("Database Name: $output.name ", debug)
+                        def name = output['name']
+                        def wildvalue = "${instanceName.replaceAll(/[:|\\|\s|=]+/, "_")}||${name.replaceAll(/[:|\\|\s|=]+/, "_")}";
+                        println "${wildvalue}.db_row_size=" + output.db_row_size
+                        println "${wildvalue}.db_row_max_size=" + output.db_row_max_size
+                        println "${wildvalue}.active_transactions=" + output.active_transactions
+                        println "${wildvalue}.backup_restore_throughput=" + output.backup_restore_throughput
+                        println "${wildvalue}.bulk_copy_rows=" + output.bulk"
+===========================================================================================================================================	
+import groovy.sql.Sql
+
+// Get basic info
+def hostname = hostProps.get("system.hostname")
+def sqlInstances = hostProps.get("sybase.sql_server_instances") ?: hostProps.get("auto.sql_server_instances")  // override sql instances with manual instances
+Boolean debug = false
+
+println("***** Running Databases Collect *****")
+println("\tSQL Instances ${sqlInstances}")
+
+if (sqlInstances) {
+    sqlInstances.toString().tokenize(",").each { instanceName ->
+        instanceName = instanceName.trim()
+        println("\tInstance Name ${instanceName}")
+        def jdbcConnectionString = hostProps.get("sybase.${instanceName.toLowerCase()}.sybase_url") ?: hostProps.get("auto.${instanceName.toLowerCase()}.sybase_url")
+        def user = hostProps.get("sybase.${instanceName.toLowerCase()}.user") ?: hostProps.get("jdbc.sybase.user") ?: ""
+        def pass = hostProps.get("sybase.${instanceName.toLowerCase()}.pass") ?: hostProps.get("jdbc.sybase.pass") ?: ""
+        println("\tJDBC Connection String  ${jdbcConnectionString}")
+        
+        // ensure we dont have any null's
+        if (jdbcConnectionString) {
+            def conn = attemptConnection(user, pass, jdbcConnectionString, debug)  //create a connection
+            println("Did this connect:  $conn.connection")
+            
+            if (conn.status == "success") {
+                def sqlQuery = """SELECT
+                    name,
+                    status = CONVERT(VARCHAR, status),
+                    recovery = CONVERT(VARCHAR, recovery),
+                    isolation_level,
+                    is_sync_with_backup,
+                    dbid,
+                    db_row_size = CONVERT(BIGINT, size),
+                    db_row_max_size = CONVERT(BIGINT, max_size),
+                    active_transactions = CONVERT(BIGINT, cntr_value),
+                    backup_restore_throughput = CONVERT(BIGINT, cntr_value),
+                    bulk_copy_rows = CONVERT(BIGINT, cntr_value),
+                    bulk_copy_throughput = CONVERT(BIGINT, cntr_value),
+                    data_file_size = CONVERT(BIGINT, size),
+                    log_bytes_flushed = CONVERT(BIGINT, cntr_value),
+                    log_cache_reads = CONVERT(BIGINT, cntr_value),
+                    log_cache_hit_ratio = CONVERT(BIGINT, cntr_value),
+                    b_log_max_size = CONVERT(BIGINT, cntr_value),
+                    db_log_size = CONVERT(BIGINT, cntr_value)
+                FROM master..sysdatabases d
+                JOIN sysperfinfo p ON d.dbid = p.dbid
+                WHERE p.object_name = 'SQLServer:Databases'
+                """
+                
+                def outputRecords = runQuery(sqlQuery, conn.connection, debug)
+                println("Output Record Status : ${outputRecords.status}")
+                
+                if (outputRecords.status == 'success') {
+                    outputRecords.data.each { output ->
+                        println("Database Name: $output.name ")
+                        def name = output['name']
+                        def wildvalue = "${instanceName.replaceAll(/[:|\\|\s|=]+/, "_")}||${name.replaceAll(/[:|\\|\s|=]+/, "_")}";
+                        println "${wildvalue}.db_row_size=" + output.db_row_size
+                        println "${wildvalue}.db_row_max_size=" + output.db_row_max_size
+                        println "${wildvalue}.active_transactions=" + output.active_transactions
+                        println "${wildvalue}.backup_restore_throughput=" + output.backup_restore_throughput
+                        println "${wildvalue}.bulk_copy_rows=" + output.bulk_copy_rows
+                        println "${wildvalue}.bulk_copy_throughput=" + output.bulk_copy_throughput
+                        
+                    }
+                }
+            }
+        }
+    }
+}
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++					

@@ -1,0 +1,1072 @@
+DATABASE LIST
+================================================================================================
+import groovy.sql.Sql
+//@Grab('org.hsqldb:hsqldb:2.7.1:jdk8')
+//@GrabConfig(systemClassLoader=true)
+//@Grab("com.sybase.jdbc4.jdbc.SybDriver")
+Class.forName("com.sybase.jdbc4.jdbc.SybDriver")
+
+// Get basic info to connect
+def hostname = hostProps.get("system.hostname")
+def user = hostProps.get("sybase.user")
+def pass = hostProps.get("sybase.pass")
+def port = 21000
+
+// Construct an SQL instance with a url and a driver
+def url = "jdbc:sybase:Tds:##hostname##:21000", username=user, password=pass
+//def url = "jdbc:sybase:Tds:hostname:port", "user", "pass"
+
+// sybase SQL Driver
+def driver = "com.sybase.jdbc4.jdbc.SybDriver"
+
+// Create a connection to the SQL server
+sql = Sql.newInstance(url,user,pass,driver)
+sql.withTransaction {
+
+// Iterate over query results and list the databases
+sql.eachRow("select name from master..sysdatabases")
+        { 
+            name= it.toString().split(":")[1].replace("]","")
+            // Create an instance for each database
+            println name+"##"+name
+        }
+    
+   }
+sql.close()        
+return 0
+==================================================================================================
+DATABASE offline status 
+=================================================================================================
+import groovy.sql.Sql
+//@Grab('org.hsqldb:hsqldb:2.7.1:jdk8')
+//@GrabConfig(systemClassLoader=true)
+//@Grab("com.sybase.jdbc4.jdbc.SybDriver")
+Class.forName("com.sybase.jdbc4.jdbc.SybDriver")
+
+// Get basic info to connect
+def hostname = hostProps.get("system.hostname")
+def user = hostProps.get("sybase.user")
+def pass = hostProps.get("sybase.pass")
+def port = 21000
+
+// Construct an SQL instance with a url and a driver
+def url = "jdbc:sybase:Tds:##hostname##:21000", username=user, password=pass
+//def url = "jdbc:sybase:Tds:hostname:port", "user", "pass"
+
+// sybase SQL Driver
+def driver = "com.sybase.jdbc4.jdbc.SybDriver"
+
+// Create a connection to the SQL server
+sql = Sql.newInstance(url,user,pass,driver)
+sql.withTransaction {
+
+// Iterate over query results and list the databases
+sql.eachRow("select name from master..sysdatabases")
+        { 
+            name= it.toString().split(":")[1].replace("]","")
+            // Create an instance for each database
+            println name+"##"+name
+        }
+    
+   }
+sql.close()        
+return 0
+=================================================================================================
+import groovy.sql.Sql
+//@Grab('org.hsqldb:hsqldb:2.7.1:jdk8')
+//@GrabConfig(systemClassLoader=true)
+Class.forName("com.sybase.jdbc4.jdbc.SybDriver")
+
+// Get basic info to connect
+def hostname = hostProps.get("system.hostname")
+def user = hostProps.get("sybase.user")
+def pass = hostProps.get("sybase.pass")
+def port = 21000
+
+// Construct an SQL instance with a url and a driver
+def url = "jdbc:sybase:Tds:##hostname##:21000", username=user, password=pass
+//def url = "jdbc:sybase:Tds:hostname:port", "user", "pass"
+
+// Sybase SQL Driver
+def driver = "com.sybase.jdbc4.jdbc.SybDriver"
+
+// Create a connection to the SQL server
+sql = Sql.newInstance(url,user,pass,driver)
+// Get the list of databases and their status
+def wildvalue = instanceProps.get("wildvalue")
+def result = sql.rows("SELECT status FROM master..sysdatabases where name=${wildvalue}")
+String resultParsed = result[0]
+println resultParsed.replaceAll("\\{|\\}","")
+
+
+return 0
+==================================================================================================
+DATABASE BLOCk
+=================================================================================================
+import groovy.sql.Sql
+//@Grab('org.hsqldb:hsqldb:2.7.1:jdk8')
+//@GrabConfig(systemClassLoader=true)
+Class.forName("com.sybase.jdbc4.jdbc.SybDriver")
+
+// Get basic info to connect
+def hostname = hostProps.get("system.hostname")
+def user = hostProps.get("sybase.user")
+def pass = hostProps.get("sybase.pass")
+def port = 21000
+
+// Construct an SQL instance with a url and a driver
+def url = "jdbc:sybase:Tds:##hostname##:21000", username=user, password=pass
+//def url = "jdbc:sybase:Tds:hostname:port", "user", "pass"
+
+// sybase SQL Driver
+def driver = "com.sybase.jdbc4.jdbc.SybDriver"
+
+// Create a connection to the SQL server
+sql = Sql.newInstance(url,user,pass,driver)
+sql.withTransaction {
+
+// Iterate over query results and list the databases
+sql.eachRow("select cmd from sysprocesses ")
+        { 
+            name= it.toString().split(":")[1].replace("]","")
+            // Create an instance for each CMD
+            println name+"##"+name
+        }
+    
+   }
+sql.close()        
+return 0
+==================================================================================================
+import groovy.sql.Sql
+//@Grab('org.hsqldb:hsqldb:2.7.1:jdk8')
+//@GrabConfig(systemClassLoader=true)
+Class.forName("com.sybase.jdbc4.jdbc.SybDriver")
+
+// Get basic info to connect
+def hostname = hostProps.get("system.hostname")
+def user = hostProps.get("sybase.user")
+def pass = hostProps.get("sybase.pass")
+def port = 21000
+
+// Construct an SQL instance with a url and a driver
+def url = "jdbc:sybase:Tds:${hostname}:${port}", username=user, password=pass
+
+// Sybase SQL Driver
+def driver = "com.sybase.jdbc4.jdbc.SybDriver"
+
+// Create a connection to the SQL server
+def sql = Sql.newInstance(url, user, pass, driver)
+
+def results = []
+
+sql.withTransaction {
+    // Iterate over query results and list the databases
+    def wildvalue = instanceProps.get("wildvalue")
+    results = sql.rows("select spid,  blocked from sysprocesses WHERE cmd=${wildvalue}")
+}
+
+sql.close()
+
+// Format the results as key-value pairs
+def resultParsed = results.collect { row ->
+    "SPID = ${row.spid}\nBLOCKED = ${row.blocked}"
+}
+
+// Join the results with newlines and print the output
+println resultParsed.join("\n")
+
+return 0
+==================================================================================================
+DATABASE SEGEMNT
+==================================================================================================
+import groovy.sql.Sql
+import java.sql.SQLException
+
+// Get basic info to connect
+def hostname = hostProps.get("system.hostname")
+def user = hostProps.get("sybase.user")
+def pass = hostProps.get("sybase.pass")
+def port = 21000
+
+// Construct an SQL instance with a URL and a driver
+def url = "jdbc:sybase:Tds:$hostname:$port"
+def driver = "com.sybase.jdbc4.jdbc.SybDriver"
+def sql = Sql.newInstance(url, user, pass, driver)
+def conn = sql.getConnection()
+
+try {
+    def stmt = conn.createStatement()
+
+    // Retrieve database names
+    def dbRs = stmt.executeQuery("select name from master..sysdatabases")
+
+    while (dbRs.next()) {
+        def dbName = dbRs.getString("name")
+
+        // Construct a new SQL instance for each database
+        def dbUrl = "jdbc:sybase:Tds:$hostname:$port?ServiceName=$dbName"
+        def dbSql = Sql.newInstance(dbUrl, user, pass, driver)
+        def dbConn = dbSql.getConnection()
+
+        try {
+            def dbStmt = dbConn.createStatement()
+
+            // Retrieve segment names for the current database
+            def segmentRs = dbStmt.executeQuery("select name from syssegments")
+
+            while (segmentRs.next()) {
+                def segmentName = segmentRs.getString("name")
+
+                // Process segment information and create instance
+                def instanceName = "${dbName}-${segmentName}"
+                def instanceConfig = [
+                    "segment": segmentName,
+                    "description": "Instance for segment: ${segmentName}",
+                    "prop1name": "prop1value",
+                    "prop2name": "prop2value"
+                ]
+
+                createInstance(instanceName, instanceConfig)
+            }
+
+            segmentRs.close()
+            dbStmt.close()
+        } catch (SQLException e) {
+            // Handle SQL exception
+            e.printStackTrace()
+        } finally {
+            if (dbConn != null) {
+                dbConn.close()
+            }
+        }
+    }
+
+    dbRs.close()
+    stmt.close()
+} catch (SQLException e) {
+    // Handle SQL exception
+    e.printStackTrace()
+} finally {
+    if (conn != null) {
+        conn.close()
+    }
+}
+
+def createInstance(name, config) {
+    def description = config.description
+    def prop1 = config.prop1name
+    def prop2 = config.prop2name
+
+    println("${name}##${name}##${description}####prop1name=${prop1}&prop2name=${prop2}")
+}================================================================================================
+import groovy.sql.Sql
+import java.math.BigDecimal
+
+Class.forName("com.sybase.jdbc4.jdbc.SybDriver")
+
+// Get basic info to connect
+def hostname = hostProps.get("system.hostname")
+def user = hostProps.get("sybase.user")
+def pass = hostProps.get("sybase.pass")
+def port = 21000
+def wildvalue = instanceProps.get("wildvalue")
+def values = "${wildvalue}".split("-", 2)
+def databaseName = values[0]
+def segmentName = values[1]
+
+// Construct an SQL instance with a URL and a driver
+def url = "jdbc:sybase:Tds:${hostname}:${port}"
+def sql = Sql.newInstance(url, user, pass, "com.sybase.jdbc4.jdbc.SybDriver")
+
+try {
+    // Set the current database to the target database
+    sql.execute("USE ${databaseName}")
+
+    // Execute the SQL query to retrieve segment information
+  def query = """
+   SELECT SegmentName = s.name,
+          segmentID = s.segment,
+          sizeMB = convert(numeric(18,3),(convert(float,sum(u.size)) * @@maxpagesize/1048576)),
+          unusedMB = convert(numeric(18,3),(convert(float,sum(u.size))-sum( case when(convert(float,u.size)> curunreservedpgs(u.dbid,u.lstart,u.unreservedpgs))
+                                    Then convert(float,u.size) - curunreservedpgs(u.dbid,u.lstart,u.unreservedpgs)
+                                    ELSE 0
+                                END )) * @@maxpagesize /1048576)
+   FROM 
+      master.dbo.sysusages u,
+      syssegments s
+   WHERE u.dbid = db_id('${databaseName}')
+   GROUP BY s.segment, s.name
+   HAVING s.name LIKE '${segmentName}'
+"""
+    def result = sql.firstRow(query)
+
+    def segmentNameValue = result.SegmentName
+    def segmentID = result.segmentID
+    def sizeMB = new BigDecimal(result.sizeMB.toString()).setScale(0, BigDecimal.ROUND_HALF_UP)
+    def unusedMB = new BigDecimal(result.unusedMB.toString()).setScale(0, BigDecimal.ROUND_HALF_UP)
+    def usedMB = sizeMB - unusedMB
+
+   // println "Segment Name: ${segmentNameValue}"
+    println "${wildvalue}.SegmentID: ${segmentID}"
+    println "${wildvalue}.Size: ${sizeMB.toPlainString()} "
+    println "${wildvalue}.Used: ${usedMB.toPlainString()} "
+    println "${wildvalue}.Unused: ${unusedMB.toPlainString()} "
+} catch (Exception e) {
+    println "An error occurred: ${e.message}"
+} finally {
+    sql.close()
+}
+======================================================================================================
+Active JObs
+=================================================================================================
+
+import groovy.sql.Sql
+//@Grab('org.hsqldb:hsqldb:2.7.1:jdk8')
+//@GrabConfig(systemClassLoader=true)
+//@Grab("com.sybase.jdbc4.jdbc.SybDriver")
+Class.forName("com.sybase.jdbc4.jdbc.SybDriver")
+
+// Get basic info to connect
+def hostname = hostProps.get("system.hostname")
+def user = hostProps.get("sybase.user")
+def pass = hostProps.get("sybase.pass")
+def port = 21000
+
+// Construct an SQL instance with a url and a driver
+def url = "jdbc:sybase:Tds:##hostname##:21000", username=user, password=pass
+//def url = "jdbc:sybase:Tds:hostname:port", "user", "pass"
+
+// sybase SQL Driver
+def driver = "com.sybase.jdbc4.jdbc.SybDriver"
+
+// Create a connection to the SQL server
+sql = Sql.newInstance(url,user,pass,driver)
+sql.withTransaction {
+
+// Iterate over query results and list the databases
+sql.eachRow("select name from master..sysdatabases")
+        { 
+            name= it.toString().split(":")[1].replace("]","")
+            // Create an instance for each database
+            println name+"##"+name
+        }
+    
+   }
+sql.close()        
+return 0
+
+==========================================================================================
+import groovy.sql.Sql
+
+Class.forName("com.sybase.jdbc4.jdbc.SybDriver")
+
+// Get basic info to connect
+def hostname = hostProps.get("system.hostname")
+def user = hostProps.get("sybase.user")
+def pass = hostProps.get("sybase.pass")
+def port = 21000
+
+def wildvalue = instanceProps.get("wildvalue")
+
+// Construct an SQL instance with a URL and a driver
+def url = "jdbc:sybase:Tds:${hostname}:${port}"
+def sql = Sql.newInstance(url, user, pass, "com.sybase.jdbc4.jdbc.SybDriver")
+
+try {
+   // println "Connecting to: ${url}"
+  //  println "Using database: ${wildvalue}"
+
+    // Set the current database to the target database
+    sql.execute("USE ${wildvalue}")
+  //  println "Database switched successfully."
+
+    // Execute the SQL query to retrieve the rows
+    def query = """
+        select spid =convert(varchar(4),sp.spid),
+status = convert(varchar(10),sp.status),
+loginame =substring(sl.name,1,10),
+hostname = convert(varchar(8),sp.hostname),
+blocked_SPID = convert(varchar(4), sp.blocked),
+ dbname = convert(varchar(9), sd.name),
+ command = substring(sp.cmd,1,14),
+program_name = convert(varchar(12),sp.program_name)
+
+from master..sysprocesses sp,
+master..syslogins sl,
+master..sysdatabases sd
+where sp.uid = sl.suid and sp.dbid = sd.dbid
+    """
+   // println "Executing query:\n${query}"
+    def resultSet = sql.rows(query)
+
+    // Filter based on database name
+    def filteredResult = resultSet.findAll { row ->
+        row.dbname == wildvalue
+    }
+
+    // Count the filtered output
+    def rowCount = filteredResult.size()
+    println "${wildvalue}.ActiveJobs: ${rowCount}"
+
+    // Print the filtered results
+    filteredResult.each { row ->
+       //println "SPID: ${row.spid}"
+     //   println "Status: ${row.status}"
+      //  println "Login Name: ${row.loginame}"
+     //   println "Host Name: ${row.hostname}"
+      //  println "Blocked SPID: ${row.blocked_SPID}"
+      println "Database Name: ${row.dbname}"
+      //  println "Command: ${row.command}"
+      //  println "Program Name: ${row.program_name}"
+    }
+} catch (Exception e) {
+    println "An error occurred: ${e.message}"
+    e.printStackTrace()
+} finally {
+    sql.close()
+}
+return 0
+================================================================================================
+Job status
+===============================================================================================
+import groovy.sql.Sql
+//@Grab('org.hsqldb:hsqldb:2.7.1:jdk8')
+//@GrabConfig(systemClassLoader=true)
+//@Grab("com.sybase.jdbc4.jdbc.SybDriver")
+Class.forName("com.sybase.jdbc4.jdbc.SybDriver")
+
+// Get basic info to connect
+def hostname = hostProps.get("system.hostname")
+def user = hostProps.get("sybase.user")
+def pass = hostProps.get("sybase.pass")
+def port = 21000
+
+// Construct an SQL instance with a url and a driver
+def url = "jdbc:sybase:Tds:##hostname##:21000", username=user, password=pass
+//def url = "jdbc:sybase:Tds:hostname:port", "user", "pass"
+
+// sybase SQL Driver
+def driver = "com.sybase.jdbc4.jdbc.SybDriver"
+
+// Create a connection to the SQL server
+sql = Sql.newInstance(url,user,pass,driver)
+sql.withTransaction {
+
+// Iterate over query results and list the databases
+sql.eachRow("select name from master..sysdatabases")
+        { 
+            name= it.toString().split(":")[1].replace("]","")
+            // Create an instance for each database
+            println name+"##"+name
+        }
+    
+   }
+sql.close()        
+return 0
+=================================================================================================
+import groovy.sql.Sql
+
+Class.forName("com.sybase.jdbc4.jdbc.SybDriver")
+
+// Get basic info to connect
+def hostname = hostProps.get("system.hostname")
+def user = hostProps.get("sybase.user")
+def pass = hostProps.get("sybase.pass")
+def port = 21000
+
+def wildvalue = instanceProps.get("wildvalue")
+
+// Construct an SQL instance with a URL and a driver
+def url = "jdbc:sybase:Tds:${hostname}:${port}"
+def sql = Sql.newInstance(url, user, pass, "com.sybase.jdbc4.jdbc.SybDriver")
+
+try {
+    // Set the current database to the target database
+    sql.execute("USE ${wildvalue}")
+
+    // Execute the SQL query to retrieve the rows
+    def query = """
+        select spid = convert(varchar(4), sp.spid),
+            status = convert(varchar(10), sp.status),
+            dbname = '${wildvalue}'
+        from master..sysprocesses sp,
+            master..syslogins sl
+        where sp.uid = sl.suid
+    """
+
+    def resultSet = sql.rows(query)
+
+    // Filter based on database name
+    def filteredResult = resultSet.findAll { row ->
+        row.dbname == wildvalue
+    }
+    
+    // Combine the gaps and multi-word statuses in the status field
+    def statusCountMap = [:]
+    filteredResult.each { row ->
+        def status = row.status.replace(' ', '_') // Replace spaces with underscores
+        if (statusCountMap.containsKey(status)) {
+            statusCountMap[status]++
+        } else {
+            statusCountMap[status] = 1
+        }
+    }
+    
+    // Print the count of each status group
+    statusCountMap.each { status, count ->
+        println "${wildvalue}.${status}: ${count}"
+    }
+} catch (Exception e) {
+    println "An error occurred: ${e.message}"
+    e.printStackTrace()
+} finally {
+    sql.close()
+}
+
+return 0
+
+
+
+
+
+Initialize an empty map called statusCountMap to store the count of each status value.
+Iterate over each element (row) in the filteredResult collection.
+Replace any spaces in the status field of the current row with underscores, using the replace method. This ensures consistent keys in the statusCountMap.
+Check if the statusCountMap already contains the status as a key, using the containsKey method.
+If it does, increment the corresponding count value by 1 (statusCountMap[status]++).
+If it doesn't, add a new key-value pair to the map with the status as the key and initialize the count to 1 (statusCountMap[status] = 1).
+Repeat steps 2-4 for each row in filteredResult.
+At the end, statusCountMap will contain the count of each unique status value found in the filteredResult collection. The keys of the map are the unique status values, and the values are their respective counts.
+=================================================================================================
+Active Connections
+=================================================================================================
+
+import groovy.sql.Sql
+//@Grab('org.hsqldb:hsqldb:2.7.1:jdk8')
+//@GrabConfig(systemClassLoader=true)
+//@Grab("com.sybase.jdbc4.jdbc.SybDriver")
+Class.forName("com.sybase.jdbc4.jdbc.SybDriver")
+
+// Get basic info to connect
+def hostname = hostProps.get("system.hostname")
+def user = hostProps.get("sybase.user")
+def pass = hostProps.get("sybase.pass")
+def port = 21000
+
+// Construct an SQL instance with a url and a driver
+def url = "jdbc:sybase:Tds:##hostname##:21000", username=user, password=pass
+//def url = "jdbc:sybase:Tds:hostname:port", "user", "pass"
+
+// sybase SQL Driver
+def driver = "com.sybase.jdbc4.jdbc.SybDriver"
+
+// Create a connection to the SQL server
+sql = Sql.newInstance(url,user,pass,driver)
+sql.withTransaction {
+
+// Iterate over query results and list the databases
+sql.eachRow("select name from master..sysdatabases")
+        { 
+            name= it.toString().split(":")[1].replace("]","")
+            // Create an instance for each database
+            println name+"##"+name
+        }
+    
+   }
+sql.close()        
+return 0
+==================================================================================================
+import groovy.sql.Sql
+//@Grab('org.hsqldb:hsqldb:2.7.1:jdk8')
+//@GrabConfig(systemClassLoader=true)
+Class.forName("com.sybase.jdbc4.jdbc.SybDriver")
+
+// Get basic info to connect
+def hostname = hostProps.get("system.hostname")
+def user = hostProps.get("sybase.user")
+def pass = hostProps.get("sybase.pass")
+def port = 21000
+
+// Construct an SQL instance with a url and a driver
+def url = "jdbc:sybase:Tds:##hostname##:21000", username=user, password=pass
+//def url = "jdbc:sybase:Tds:hostname:port", "user", "pass"
+
+// Sybase SQL Driver
+def driver = "com.sybase.jdbc4.jdbc.SybDriver"
+
+// Create a connection to the SQL server
+sql = Sql.newInstance(url,user,pass,driver)
+// Get the list of databases and their status
+def wildvalue = instanceProps.get("wildvalue")
+def query = """
+    SELECT 
+        COUNT(*) AS active_connections
+    FROM
+        master..sysprocesses
+    WHERE 
+        DB_NAME(dbid) = '${wildvalue}'
+"""
+
+try {
+    // Execute the query and fetch the result
+    def result = sql.firstRow(query)
+    
+    // Retrieve the count of active connections
+    def activeConnections = result.active_connections
+    
+    // Display the count
+    println("${wildvalue}.ActiveConnections: ${activeConnections}")
+} finally {
+    // Close the database connection
+ sql.close()
+}
+==================================================================================================
+Long Running Process syslogholds
+==================================================================================================
+import groovy.sql.Sql
+
+Class.forName("com.sybase.jdbc4.jdbc.SybDriver")
+
+def hostname = hostProps.get("system.hostname")
+def user = hostProps.get("sybase.user")
+def pass = hostProps.get("sybase.pass")
+def port = 21000
+
+def url = "jdbc:sybase:Tds:${hostname}:${port}"
+def driver = "com.sybase.jdbc4.jdbc.SybDriver"
+
+sql = Sql.newInstance(url, user, pass, driver)
+
+sql.withTransaction {
+    sql.eachRow("select spid, db_name(dbid) as DataBaseName from master..syslogshold WHERE substring(name, 2, 28) <> 'replication_truncation_point' AND datediff(mi, starttime, getdate()) >= 5") {
+        def it1 = it.spid
+        def it2 = it.DataBaseName
+
+        println "${it1}##${it1}.${it2}######DATABASENAME=${it2}"
+    }
+}
+
+sql.close()
+return 0
+===================================================================================================
+import groovy.sql.Sql
+//@Grab('org.hsqldb:hsqldb:2.7.1:jdk8')
+//@GrabConfig(systemClassLoader=true)
+Class.forName("com.sybase.jdbc4.jdbc.SybDriver")
+
+// Get basic info to connect
+def hostname = hostProps.get("system.hostname")
+def user = hostProps.get("sybase.user")
+def pass = hostProps.get("sybase.pass")
+def port = 21000
+
+// Construct an SQL instance with a URL and a driver
+def url = "jdbc:sybase:Tds:" + hostname + ":21000"
+def driver = "com.sybase.jdbc4.jdbc.SybDriver"
+
+// Create a connection to the SQL server
+def sql = Sql.newInstance(url, user, pass, driver)
+
+// Get the value for wildvalue from instanceProps
+def wildvalue = instanceProps.get("wildvalue")
+
+// Define the SQL query with CONVERT function
+def query = """
+    select spid 
+    from master..syslogshold 
+    where substring(name, 2, 28) <> 'replication_truncation_point' 
+    and datediff(mi, starttime, getdate()) >= 5 
+    and spid = convert(SMALLINT,'${wildvalue}')
+"""
+
+try {
+    // Execute the query and fetch the result
+    def result = sql.rows(query)
+    
+    // Print the spid values
+    result.each { row ->
+        println("${wildvalue}.SPID: ${row.spid}")
+    }
+} finally {
+    // Close the database connection
+    sql.close()
+}
+return 0
+=================================================================================================
+Long Running process sys process
+=================================================================================================
+import groovy.sql.Sql
+
+Class.forName("com.sybase.jdbc4.jdbc.SybDriver")
+
+def hostname = hostProps.get("system.hostname")
+def user = hostProps.get("sybase.user")
+def pass = hostProps.get("sybase.pass")
+def port = 21000
+
+def url = "jdbc:sybase:Tds:${hostname}:${port}"
+def driver = "com.sybase.jdbc4.jdbc.SybDriver"
+
+sql = Sql.newInstance(url, user, pass, driver)
+
+sql.withTransaction {
+    sql.eachRow("select spid, db_name(dbid) as DataBaseName from master..sysprocesses where (execution_time/1000)/60 > 5") {
+        def it1 = it.spid
+        def it2 = it.DataBaseName
+
+        println "${it1}##${it1}.${it2}######DATABASENAME=${it2}"
+    }
+}
+
+sql.close()
+return 0
+================================================================================================
+import groovy.sql.Sql
+//@Grab('org.hsqldb:hsqldb:2.7.1:jdk8')
+//@GrabConfig(systemClassLoader=true)
+Class.forName("com.sybase.jdbc4.jdbc.SybDriver")
+
+// Get basic info to connect
+def hostname = hostProps.get("system.hostname")
+def user = hostProps.get("sybase.user")
+def pass = hostProps.get("sybase.pass")
+def port = 21000
+
+// Construct an SQL instance with a URL and a driver
+def url = "jdbc:sybase:Tds:" + hostname + ":21000"
+def driver = "com.sybase.jdbc4.jdbc.SybDriver"
+
+// Create a connection to the SQL server
+def sql = Sql.newInstance(url, user, pass, driver)
+
+// Get the value for wildvalue from instanceProps
+def wildvalue = instanceProps.get("wildvalue")
+
+// Define the SQL query with CONVERT function
+def query = """
+    select spid 
+    from master..sysprocesses where (execution_time/1000)/60 > 5
+    and spid = CONVERT(SMALLINT,'${wildvalue}')
+"""
+
+try {
+    // Execute the query and fetch the result
+    def result = sql.rows(query)
+    
+    // Print the spid values
+    result.each { row ->
+        println("${wildvalue}.SPID: ${row.spid}")
+    }
+} finally {
+    // Close the database connection
+    sql.close()
+}
+return 0
+==================================================================================================
+TEMPDB
+==================================================================================================
+import groovy.sql.Sql
+
+Class.forName("com.sybase.jdbc4.jdbc.SybDriver")
+
+def hostname = hostProps.get("system.hostname")
+def user = hostProps.get("sybase.user")
+def pass = hostProps.get("sybase.pass")
+def port = 21000
+
+def url = "jdbc:sybase:Tds:${hostname}:${port}"
+def driver = "com.sybase.jdbc4.jdbc.SybDriver"
+
+sql = Sql.newInstance(url, user, pass, driver)
+
+sql.withTransaction {
+    sql.eachRow("select name,dbid from master..sysdatabases WHERE dbid=2 OR status3&256=256") {
+        def it1 = it.name
+        def it2 = it.dbid
+        
+
+        println "${it1}##${it1}.${it2}##Database Name is ${it1}.& Datsabse id is ${it2}#####=checking TempDB usage"
+    }
+}
+
+sql.close()
+return 0
+======================================================================================================
+import groovy.sql.Sql
+
+Class.forName("com.sybase.jdbc4.jdbc.SybDriver")
+
+def hostname = hostProps.get("system.hostname")
+def user = hostProps.get("sybase.user")
+def pass = hostProps.get("sybase.pass")
+def port = 21000
+
+def url = "jdbc:sybase:Tds:" + hostname + ":21000"
+def driver = "com.sybase.jdbc4.jdbc.SybDriver"
+
+def sql = Sql.newInstance(url, user, pass, driver)
+
+def wildvalue = instanceProps.get("wildvalue")
+
+
+def query = """
+    select name as db_name,
+    ceiling(sum(case when u.segmap != 4 and vdevno >= 0 then (u.size/1048576.)*@@maxpagesize end )) as data_size_MB,
+    ceiling(sum(case when u.segmap != 4 and vdevno >= 0 then size - curunreservedpgs(u.dbid, u.lstart, u.unreservedpgs) end)/1048576.*@@maxpagesize) as data_used_MB,
+    ceiling(100 * (1 - 1.0 * sum(case when u.segmap != 4 and vdevno >= 0 then curunreservedpgs(u.dbid, u.lstart, u.unreservedpgs) end) / sum(case when u.segmap != 4 then u.size end))) as data_used_pct,
+    ceiling(sum(case when u.segmap = 4 and vdevno >= 0 then u.size/1048576.*@@maxpagesize end)) as log_size_MB,
+    ceiling(sum(case when u.segmap = 4 and vdevno >= 0 then u.size/1048576.*@@maxpagesize end) - lct_admin('logsegment_freepages',d.dbid)/1048576.*@@maxpagesize) as log_used_MB,
+    ceiling(100 * (1 - 1.0 * lct_admin('logsegment_freepages',d.dbid) / sum(case when u.segmap in (4, 7) and vdevno >= 0 then u.size end))) as log_used_pct 
+    from master..sysdatabases d, master..sysusages u
+"""
+
+try {
+    def result = sql.rows(query)
+    
+    def filteredResult = result.findAll { row ->
+        row.db_name == wildvalue
+    }
+    
+    if (filteredResult.size() > 0) {
+        filteredResult.each { row ->
+           // println("${wildvalue}.Database Name: ${row.db_name}")
+            println("${wildvalue}.DataSize: ${row.data_size_MB} ")
+            println("${wildvalue}.DataUsed: ${row.data_used_MB} ")
+            println("${wildvalue}.DataUsedPer: ${row.data_used_pct}")
+            println("${wildvalue}.LogSize: ${row.log_size_MB} ")
+            println("${wildvalue}.LogUsed: ${row.log_used_MB} ")
+            println("${wildvalue}.LogUsedPer: ${row.log_used_pct}")
+            
+        }
+    } else {
+        println("No database found")
+    }
+} catch (Exception e) {
+    println("An error occurred: ${e.message}")
+}
+return 0
+=======================================================================================================
+
+spinlock
+==================================================================================================
+import groovy.sql.Sql
+
+Class.forName("com.sybase.jdbc4.jdbc.SybDriver")
+
+def hostname = hostProps.get("system.hostname")
+def user = hostProps.get("sybase.user")
+def pass = hostProps.get("sybase.pass")
+def port = 21000
+
+def url = "jdbc:sybase:Tds:${hostname}:${port}"
+def driver = "com.sybase.jdbc4.jdbc.SybDriver"
+
+sql = Sql.newInstance(url, user, pass, driver)
+
+sql.withTransaction { transaction ->
+    // Enable spinlock monitoring
+    sql.execute("sp_configure 'enable spinlock monitoring', 1")
+
+    // Drop tables if they already exist
+     sql.execute("if exists (select 1 from tempdb..sysobjects where name = 'Temp01') drop table tempdb..Temp01")
+     sql.execute("if exists (select 1 from tempdb..sysobjects where name = 'Temp02') drop table tempdb..Temp02")
+
+    
+    // Insert data into Temp01
+    sql.execute("select Spins, SpinlockName,SpinlockSlotID into tempdb..Temp01 from master..monSpinlockActivity where Spins>9999 group by SpinlockName having Spins = max(Spins) order by Spins desc")
+       
+	 //  sql.execute('waitfor delay "00:00:30"')
+	 Thread.sleep(30000)
+	   
+    // Insert data into Temp02
+    sql.execute("select Spins, SpinlockName,SpinlockSlotID into tempdb..Temp02 from master..monSpinlockActivity where Spins>9999 group by SpinlockName having Spins = max(Spins) order by Spins desc")
+
+    def unique = []
+
+    sql.eachRow("select distinct(a.SpinlockName),(b.Spins - a.Spins) as Contention from tempdb..Temp01 a, tempdb..Temp02 b where ((b.Spins - a.Spins) > 9999) group by (b.Spins - a.Spins)order by (b.Spins - a.Spins) desc") { row ->
+        def it1 = row.SpinlockName
+        def it2 = row.Contention
+        
+        if(! unique.contains(it1)) {
+            unique.add(it1)       
+        println "${it1}##${it1}.${it2}######Details=${it1}.${it2}"
+    }
+    }
+
+    // Commit the transaction
+    transaction.commit()
+    sql.execute("sp_configure 'enable spinlock monitoring', 0")
+}
+sql.close()
+
+
+
+======================================================================================================
+
+import groovy.sql.Sql
+
+Class.forName("com.sybase.jdbc4.jdbc.SybDriver")
+def wildvalue = instanceProps.get("wildvalue")
+def hostname = hostProps.get("system.hostname")
+def user = hostProps.get("sybase.user")
+def pass = hostProps.get("sybase.pass")
+def port = 21000
+
+def url = "jdbc:sybase:Tds:${hostname}:${port}"
+def driver = "com.sybase.jdbc4.jdbc.SybDriver"
+
+sql = Sql.newInstance(url, user, pass, driver)
+
+sql.withTransaction { transaction ->
+    // Enable spinlock monitoring
+    sql.execute("sp_configure 'enable spinlock monitoring', 1")
+
+    // Drop tables if they already exist
+    sql.execute("if exists (select 1 from tempdb..sysobjects where name = 'Temp01') drop table tempdb..Temp01")
+    sql.execute("if exists (select 1 from tempdb..sysobjects where name = 'Temp02') drop table tempdb..Temp02")
+
+    // Insert data into Temp01
+    sql.execute("select Spins, SpinlockName, SpinlockSlotID into tempdb..Temp01 from master..monSpinlockActivity where Spins > 9999 group by SpinlockName having Spins = max(Spins) order by Spins desc")
+
+    Thread.sleep(30000)
+
+    // Insert data into Temp02
+    sql.execute("select Spins, SpinlockName, SpinlockSlotID into tempdb..Temp02 from master..monSpinlockActivity where Spins > 9999 group by SpinlockName having Spins = max(Spins) order by Spins desc")
+
+    def query = """
+        select distinct(a.SpinlockName), (b.Spins - a.Spins) as Contention
+        from tempdb..Temp01 a, tempdb..Temp02 b
+        where (b.Spins - a.Spins) > 9999
+        group by (b.Spins - a.Spins)
+        order by (b.Spins - a.Spins) desc
+    """
+
+    def highestContentionRow = null
+
+    sql.eachRow(query) { row ->
+        // Create a map to store the result values
+        def result = [:]
+
+        result.spinlockName = row.SpinlockName
+        result.contention = row.Contention
+
+        def cleanSpinlockName = result.spinlockName.replaceAll(/[^a-zA-Z0-9_>\\-]/, "")
+        def cleanWildvalue = wildvalue.replaceAll(/[^a-zA-Z0-9_>\\-]/, "")
+
+        if (cleanSpinlockName.toLowerCase() == cleanWildvalue.toLowerCase() || result.spinlockName.toLowerCase() == wildvalue.toLowerCase()) {
+            if (highestContentionRow == null || result.contention > highestContentionRow.contention) {
+                highestContentionRow = result
+            }
+        }
+    }
+
+    if (highestContentionRow != null) {
+        println(" Contention= ${highestContentionRow.contention}")
+    }
+     
+}
+sql.close()
+
+
+===================================================================================================
+ASE Engine Utilisation
+====================================================================================================
+import groovy.sql.Sql
+
+Class.forName("com.sybase.jdbc4.jdbc.SybDriver")
+
+def hostname = hostProps.get("system.hostname")
+def user = hostProps.get("sybase.user")
+def pass = hostProps.get("sybase.pass")
+def port = 21000
+
+def url = "jdbc:sybase:Tds:${hostname}:${port}"
+def driver = "com.sybase.jdbc4.jdbc.SybDriver"
+
+sql = Sql.newInstance(url, user, pass, driver)
+
+sql.withTransaction { transaction ->
+    
+    // Drop tables if they already exist
+     sql.execute("if exists (select 1 from tempdb..sysobjects where name = 'Temp03') drop table tempdb..Temp03")
+     sql.execute("if exists (select 1 from tempdb..sysobjects where name = 'Temp04') drop table tempdb..Temp04")
+	 sql.execute("if exists (select 1 from tempdb..sysobjects where name = 'Temp05') drop table tempdb..Temp05")
+
+    
+    // Insert data into Temp03
+    sql.execute("SELECT EngineNumber,  (SystemCPUTime + UserCPUTime) as BusyCPUTime ,(SystemCPUTime + UserCPUTime + IdleCPUTime) as TotalCPUTime into tempdb..Temp03 FROM master..monEngine")
+       
+	 //  sql.execute('waitfor delay "00:00:30"')
+	 Thread.sleep(30000)
+	     // Insert data into Temp04
+	 sql.execute("SELECT EngineNumber,  (SystemCPUTime + UserCPUTime) as BusyCPUTime ,(SystemCPUTime + UserCPUTime + IdleCPUTime) as TotalCPUTime into tempdb..Temp04 FROM master..monEngine")
+	 
+	   
+    // Insert data into Temp05
+    sql.execute("SELECT a.EngineNumber,(b.BusyCPUTime - a.BusyCPUTime) as TimeSliceSysCPU,(b.TotalCPUTime - a.TotalCPUTime) as TimeSliceTotCPU into tempdb..Temp05 from tempdb..Temp03 a, tempdb..Temp04 b where (a.EngineNumber = b.EngineNumber)")
+
+    
+
+    sql.eachRow("select * from tempdb..Temp05") { row ->
+        def it1 = row.EngineNumber
+		def it2 = row.TimeSliceSysCPU
+		def it3 = row.TimeSliceTotCPU
+		
+        
+        
+        println "${it1}##${it1}######TimeSliceTotCPU=${it3}TimeSliceSysCPU${it2}"
+    
+    }
+
+    // Commit the transaction
+    transaction.commit()
+    
+}
+======================================================================================================
+import groovy.sql.Sql
+
+Class.forName("com.sybase.jdbc4.jdbc.SybDriver")
+
+def wildvalue = instanceProps.get("wildvalue")
+def hostname = hostProps.get("system.hostname")
+def user = hostProps.get("sybase.user")
+def pass = hostProps.get("sybase.pass")
+def port = 21000
+
+def url = "jdbc:sybase:Tds:${hostname}:${port}"
+def driver = "com.sybase.jdbc4.jdbc.SybDriver"
+
+sql = Sql.newInstance(url, user, pass, driver)
+
+sql.withTransaction { transaction ->
+    // Drop tables if they already exist
+    sql.execute("if exists (select 1 from tempdb..sysobjects where name = 'Temp03') drop table tempdb..Temp03")
+    sql.execute("if exists (select 1 from tempdb..sysobjects where name = 'Temp04') drop table tempdb..Temp04")
+    sql.execute("if exists (select 1 from tempdb..sysobjects where name = 'Temp05') drop table tempdb..Temp05")
+
+    // Insert data into Temp03
+    sql.execute("SELECT EngineNumber, (SystemCPUTime + UserCPUTime) as BusyCPUTime, (SystemCPUTime + UserCPUTime + IdleCPUTime) as TotalCPUTime into tempdb..Temp03 FROM master..monEngine")
+
+    // Wait for 30 seconds
+    Thread.sleep(30000)
+
+    // Insert data into Temp04
+    sql.execute("SELECT EngineNumber, (SystemCPUTime + UserCPUTime) as BusyCPUTime, (SystemCPUTime + UserCPUTime + IdleCPUTime) as TotalCPUTime into tempdb..Temp04 FROM master..monEngine")
+
+    // Insert data into Temp05
+    sql.execute("SELECT a.EngineNumber, (b.BusyCPUTime - a.BusyCPUTime) as TimeSliceSysCPU, (b.TotalCPUTime - a.TotalCPUTime) as TimeSliceTotCPU into tempdb..Temp05 from tempdb..Temp03 a, tempdb..Temp04 b where (a.EngineNumber = b.EngineNumber)")
+
+    def result = sql.rows("select * from tempdb..Temp05 where EngineNumber = convert(SMALLINT,'${wildvalue}')")
+
+    // Parse and print the retrieved data
+    result.each { row ->
+        println "EngineNumber: ${row.EngineNumber}"
+        println "TimeSliceSysCPU: ${row.TimeSliceSysCPU}"
+        println "TimeSliceTotCPU: ${row.TimeSliceTotCPU}"
+        
+    }
+
+    // Commit the transaction
+    transaction.commit()
+}
+=======================================================================================================

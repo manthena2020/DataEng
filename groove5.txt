@@ -1,0 +1,37 @@
+import groovy.sql.Sql
+//@Grab('org.hsqldb:hsqldb:2.7.1:jdk8')
+//@GrabConfig(systemClassLoader=true)
+//@Grab("com.sybase.jdbc4.jdbc.SybDriver")
+Class.forName("com.sybase.jdbc4.jdbc.SybDriver")
+
+// Get basic info to connect
+def hostname = hostProps.get("system.hostname")
+def user = hostProps.get("sybase.user")
+def pass = hostProps.get("sybase.pass")
+def port = 21000
+
+// Construct an SQL instance with a url and a driver
+def url = "jdbc:sybase:Tds:##hostname##:21000", username=user, password=pass
+//def url = "jdbc:sybase:Tds:hostname:port", "user", "pass"
+
+// sybase SQL Driver
+def driver = "com.sybase.jdbc4.jdbc.SybDriver"
+
+// Create a connection to the SQL server
+sql = Sql.newInstance(url,user,pass,driver)
+sql.withTransaction {
+
+// Iterate over query results and list the databases
+sql.eachRow("select spid,cmd from sysprocesses")
+        { 
+            it1=it.toString().split(',')[0]
+            it2=it.toString().split(',')[1]
+            name= it1.toString().split(":")[1].replace("]","")
+            name1= it2.toString()
+            // Create an instance for each spid
+            println name+"##"+name+"######"+"cmd="+name1+"of"+ "spid"+name
+        }
+ 
+   }
+sql.close()        
+return 0

@@ -1,0 +1,40 @@
+[root@ip-172-31-42-233 workspace]# history
+    1  yum install -y java-1.8.0-openjdk-devel.x86_64
+
+
+    2  yum install -y git
+
+
+    3  sudo wget http://repos.fedorapeople.org/repos/dchen/apache-maven/epel-apache-maven.repo -O /etc/yum.repos.d/epel-apache-maven.repo
+    4  sudo sed -i s/\$releasever/6/g /etc/yum.repos.d/epel-apache-maven.repo
+    5  sudo yum install -y apache-maven
+
+
+
+    6  sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
+    7  sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+    9  sudo amazon-linux-extras install epel -y
+   10  yum install jenkins -y
+
+
+
+   11  service jenkins start
+   12  cat /var/lib/jenkins/secrets/initialAdminPassword
+   13  cd /var/lib/jenkins/
+   14  ls
+   15  cd work
+   16  cd workspace/
+   17  ls
+   18  history
+[root@ip-172-31-42-233 workspace]#
+
+
+https://tecadmin.net/install-java-on-amazon-linux/
+
+
+https://github.com/sampatirao/myweb/blob/master/pom.xml
+
+https://www.jenkins.io/doc/tutorials/tutorial-for-installing-jenkins-on-AWS/
+
+
+

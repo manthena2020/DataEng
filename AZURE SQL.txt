@@ -1,0 +1,305 @@
+=======================================================================================================
+  SELECT 
+    AVG(avg_cpu_percent) AS AverageCPUPercentage,
+    AVG(avg_data_io_percent) AS AverageDataIOPercentage,
+    AVG(avg_log_write_percent) AS AverageLogWritePercentage,
+    AVG(avg_memory_usage_percent) AS AverageMemoryUsagePercentage,
+    (AVG(avg_cpu_percent) + AVG(avg_data_io_percent) + AVG(avg_log_write_percent)) AS DTUConsumptionPercentage,
+    MAX(avg_cpu_percent + avg_data_io_percent + avg_log_write_percent) AS MaxDTUConsumptionPercentage,
+    (SELECT MAX(v) FROM (VALUES (SELECT MAX(dtu_limit) FROM sys.resource_stats), (SELECT MAX(dtu_e_used) FROM sys.dm_db_resource_stats)) AS value(v)) AS DTULimit,
+    (SELECT MAX(dtu_e_used) FROM sys.dm_db_resource_stats) AS DTUUsed
+FROM 
+    sys.dm_db_resource_stats;
+========================================================================================================
+    /sec\s+,cntr_value=(\d+)
+	
+=====================================================================================================
+
+import java.sql.*
+
+def url = "jdbc:sqlserver://your_hostname:your_port;databaseName=your_database;user=your_username;password=your_password"
+
+def query = """
+    SELECT 
+        AVG(avg_cpu_percent) AS AverageCPUPercentage,
+        AVG(avg_data_io_percent) AS AverageDataIOPercentage,
+        AVG(avg_log_write_percent) AS AverageLogWritePercentage,
+        AVG(avg_memory_usage_percent) AS AverageMemoryUsagePercentage,
+        (AVG(avg_cpu_percent) + AVG(avg_data_io_percent) + AVG(avg_log_write_percent)) AS DTUConsumptionPercentage,
+        MAX(avg_cpu_percent + avg_data_io_percent + avg_log_write_percent) AS MaxDTUConsumptionPercentage,
+        (SELECT MAX(v) FROM (VALUES (SELECT MAX(dtu_limit) FROM sys.resource_stats), (SELECT MAX(dtu_e_used) FROM sys.dm_db_resource_stats)) AS value(v)) AS DTULimit,
+        (SELECT MAX(dtu_e_used) FROM sys.dm_db_resource_stats) AS DTUUsed
+    FROM 
+        sys.dm_db_resource_stats;
+"""
+
+try {
+    // Establish JDBC connection
+    Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver")
+    Connection connection = DriverManager.getConnection(url)
+
+    // Execute the query
+    Statement statement = connection.createStatement()
+    ResultSet resultSet = statement.executeQuery(query)
+
+    // Process the query results
+    while (resultSet.next()) {
+        def averageCPUPercentage = resultSet.getDouble("AverageCPUPercentage")
+        def averageDataIOPercentage = resultSet.getDouble("AverageDataIOPercentage")
+        def averageLogWritePercentage = resultSet.getDouble("AverageLogWritePercentage")
+        def averageMemoryUsagePercentage = resultSet.getDouble("AverageMemoryUsagePercentage")
+        def dtuConsumptionPercentage = resultSet.getDouble("DTUConsumptionPercentage")
+        def maxDTUConsumptionPercentage = resultSet.getDouble("MaxDTUConsumptionPercentage")
+        def dtuLimit = resultSet.getDouble("DTULimit")
+        def dtuUsed = resultSet.getDouble("DTUUsed")
+
+        // Process or print the values as desired
+        println("Average CPU Percentage: $averageCPUPercentage")
+        println("Average Data IO Percentage: $averageDataIOPercentage")
+        println("Average Log Write Percentage: $averageLogWritePercentage")
+        println("Average Memory Usage Percentage: $averageMemoryUsagePercentage")
+        println("DTU Consumption Percentage: $dtuConsumptionPercentage")
+        println("Max DTU Consumption Percentage: $maxDTUConsumptionPercentage")
+        println("DTU Limit: $dtuLimit")
+        println("DTU Used: $dtuUsed")
+    }
+
+    // Close the connections
+    resultSet.close()
+    statement.close()
+    connection.close()
+} catch (SQLException e) {
+    e.printStackTrace()
+}=====================================================================================================
+
+import groovy.sql.Sql
+Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver")
+
+        def hostname = hostProps.get("system.hostname")
+        def user = hostProps.get("jdbc.mssql.user")
+        def pass = hostProps.get("jdbc.mssql.pass")
+       
+       
+
+       def url = "jdbc:sqlserver://" + hostname + ":1433;integratedSecurity=true"
+	   def driver = com.microsoft.sqlserver.jdbc.SQLServerDriver
+           
+	  def sql = Sql.newInstance(url, user, pass, "com.microsoft.sqlserver.jdbc.SQLServerDriver")
+        def query = "SELECT name FROM sys.databases"
+	   def result = sql.rows(query)
+
+            // Process the query results
+            if (result.empty) {
+                println("No databases found.")
+            } else {
+                result.each { row ->
+                    String dbName = row.name
+                    println("Database: $dbName")
+                }
+            }
+
+            // Close the connection
+            sql.close()
+            println("Database connection closed.")
+        } catch (Exception e) {
+            e.printStackTrace()
+        }
+    }
+}
+
+
+
+================================================================================================
+import groovy.sql.Sql
+
+Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver")
+
+def hostname = hostProps.get("system.hostname")
+def user = hostProps.get("jdbc.mssql.user")
+def pass = hostProps.get("jdbc.mssql.pass")
+
+def url = "jdbc:sqlserver://" + hostname + ":1435;integratedSecurity=true"
+def driver = com.microsoft.sqlserver.jdbc.SQLServerDriver
+
+try {
+    def sql = Sql.newInstance(url, user, pass, driver)
+    def query = "SELECT name FROM master.dbo.sysdatabases"
+    def result = sql.rows(query)
+
+    // Process the query results
+    if (result.empty) {
+        println("No databases found.")
+    } else {
+        result.each { row ->
+            String dbName = row.name
+            println("Database: $dbName")
+        }
+    }
+
+    // Close the connection
+    sql.close()
+    println("Database connection closed.")
+} catch (Exception e) {
+    e.printStackTrace()
+}
+==================================================================================================
+MSSQL - Integration code
+
+==================================================================================================
+import com.logicmonitor.common.sse.utils.GroovyScriptHelper as GSH
+import com.logicmonitor.mod.Snippets
+
+Boolean debug = false
+def modLoader = GSH.getInstance()._getScript("Snippets", Snippets.getLoader()).withBinding(getBinding())
+def emit = modLoader.load("lm.emit", "0")
+def lmsql = modLoader.load("lm.sql", "0")
+def sqlInstances = hostProps.get("mssql.sql_server_instances") ?: hostProps.get("auto.sql_server_instances")  // override sql instances with manual instances
+
+if (sqlInstances) {
+    sqlInstances.toString().tokenize(",").each { instanceName ->
+        instanceName = instanceName.replaceAll(/[:|\\\\|\\s|=]+/, "_")
+        def jdbcConnectionString = hostProps.get("mssql.${instanceName.trim().toLowerCase()}.mssql_url") ?: hostProps.get("auto.${instanceName.trim().toLowerCase()}.mssql_url")
+        def user = hostProps.get("mssql.${instanceName.trim().toLowerCase()}.user") ?: hostProps.get("jdbc.mssql.user") ?: ""
+        def pass = hostProps.get("mssql.${instanceName.trim().toLowerCase()}.pass") ?: hostProps.get("jdbc.mssql.pass") ?: ""
+
+        // ensure we don't have any nulls
+        if (jdbcConnectionString) {
+            Map connInfo = lmsql.attemptConnection(user, pass, jdbcConnectionString)
+            if (connInfo.status == "success") {
+                def sqlQuery = """SELECT database_id, name FROM [sys].[databases]"""
+                def sqlResult = connInfo.connection.rows(sqlQuery)
+                sqlResult.each { record ->
+                    def it1 = record.database_id
+                    def it2 = record.name
+                    println "${it1}##${it1}.${it2}"
+                }
+                connInfo.connection.close()
+            }
+        }
+    }
+}
+
+return 0
+
+========================================================================================================
+Imortant SQl script
+=================================================================================================
+import com.logicmonitor.common.sse.utils.GroovyScriptHelper as GSH
+import com.logicmonitor.mod.Snippets
+
+Boolean debug = false
+def modLoader = GSH.getInstance()._getScript("Snippets", Snippets.getLoader()).withBinding(getBinding())
+def emit = modLoader.load("lm.emit", "0")
+def lmsql = modLoader.load("lm.sql", "0")
+def sqlInstances = hostProps.get("mssql.sql_server_instances") ?: hostProps.get("auto.sql_server_instances")  // override sql instances with manual instances
+def sqlQuery = """SELECT database_id, name FROM [sys].[databases]"""
+if (sqlInstances) {
+    sqlInstances.toString().tokenize(",").each { instanceName ->
+        instanceName = instanceName.replaceAll(/[:|\\\\|\\s|=]+/, "_")
+        def jdbcConnectionString = hostProps.get("mssql.${instanceName.trim().toLowerCase()}.mssql_url") ?: hostProps.get("auto.${instanceName.trim().toLowerCase()}.mssql_url")
+        def user = hostProps.get("mssql.${instanceName.trim().toLowerCase()}.user") ?: hostProps.get("jdbc.mssql.user") ?: ""
+        def pass = hostProps.get("mssql.${instanceName.trim().toLowerCase()}.pass") ?: hostProps.get("jdbc.mssql.pass") ?: ""
+        // ensure we dont have any null's
+        if (jdbcConnectionString) {
+            Map connInfo = lmsql.attemptConnection(user, pass, jdbcConnectionString)
+            if (connInfo.status == "success") {
+                def outputRecords = lmsql.runQuery(sqlQuery, connInfo.connection)
+                if (outputRecords.status == 'success') {
+                    outputRecords.data.each { database ->
+                        emit.instance("${instanceName}_${database.database_id}", database.name, ["auto.instance_name": instanceName])
+                    }
+                }
+                connInfo.connection.close()
+            }
+        }
+    }
+}
+return 0
+=====================================================================================================
+
+import com.logicmonitor.common.sse.utils.GroovyScriptHelper as GSH
+import com.logicmonitor.mod.Snippets
+
+Boolean debug = false
+def modLoader = GSH.getInstance()._getScript("Snippets", Snippets.getLoader()).withBinding(getBinding())
+def emit = modLoader.load("lm.emit", "0")
+def lmsql = modLoader.load("lm.sql", "0")
+def sqlInstances = hostProps.get("mssql.sql_server_instances") ?: hostProps.get("auto.sql_server_instances")  // override sql instances with manual instances
+
+if (sqlInstances) {
+    sqlInstances.toString().tokenize(",").each { instanceName ->
+        instanceName = instanceName.replaceAll(/[:|\\\\|\\s|=]+/, "_")
+        def jdbcConnectionString = hostProps.get("mssql.${instanceName.trim().toLowerCase()}.mssql_url") ?: hostProps.get("auto.${instanceName.trim().toLowerCase()}.mssql_url")
+        def user = hostProps.get("mssql.${instanceName.trim().toLowerCase()}.user") ?: hostProps.get("jdbc.mssql.user") ?: ""
+        def pass = hostProps.get("mssql.${instanceName.trim().toLowerCase()}.pass") ?: hostProps.get("jdbc.mssql.pass") ?: ""
+
+        // ensure we don't have any nulls
+        if (jdbcConnectionString) {
+            Map connInfo = lmsql.attemptConnection(user, pass, jdbcConnectionString)
+            if (connInfo.status == "success") {
+                def sqlQuery = """SELECT database_id, name FROM [sys].[databases]"""
+                def sqlResult = connInfo.connection.rows(sqlQuery)
+                sqlResult.each { record ->
+                    def it1 = record.database_id
+                    def it2 = record.name
+                    println "${it1}##${it1}.${it2}"
+                }
+                connInfo.connection.close()
+            }
+        }
+    }
+}
+
+return 0
+=============================================================================================
+Azure
+==================================================================================================
+import com.logicmonitor.common.sse.utils.GroovyScriptHelper as GSH
+import com.logicmonitor.mod.Snippets
+import groovy.sql.Sql
+
+Boolean debug = false
+
+def modLoader = GSH.getInstance()._getScript("Snippets", Snippets.getLoader()).withBinding(getBinding())
+def emit = modLoader.load("lm.emit", "0")
+def lmsql = modLoader.load("lm.sql", "0")
+
+def hostname = hostProps.get("system.hostname")
+def pass = hostProps.get("jdbc.mssql.pass")
+def user = hostProps.get("jdbc.mssql.user")
+def port = 1433
+def url = "jdbc:sqlserver://" + hostname + ":"+port+";integratedSecurity=false;Encrypt=True;TrustServerCertificate=true"
+def driver = 'com.microsoft.sqlserver.jdbc.SQLServerDriver'
+
+println "jdbc.mssql.user: $user"
+
+def connectionProperties = new Properties()
+connectionProperties.setProperty("user", user)
+connectionProperties.setProperty("password", pass)
+
+def sql
+
+try {
+    sql = Sql.newInstance(url, connectionProperties, driver)
+
+    if (sql) {
+        def sqlQuery = """SELECT database_id, name FROM sys.databases"""
+        def sqlResult = sql.rows(sqlQuery)
+        sqlResult.each { record ->
+            def databaseId = record.database_id
+            def databaseName = record.name
+            println "${databaseId}##${databaseName}"
+        }
+    } else {
+        println "Failed to establish a SQL connection."
+    }
+} catch (Exception e) {
+    println "Error: ${e.message}"
+} finally {
+    if (sql) {
+        sql.close()
+    }
+}
+
+return 0
+===================================================================================================

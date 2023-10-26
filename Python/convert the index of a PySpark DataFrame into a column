@@ -1,0 +1,8 @@
+# Assuming df is your DataFrame
+df = createDataFrame([
+("Alice", 1),
+("Bob", 2),
+("Charlie", 3),
+], ["Name", "Value"])
+
+df.show()

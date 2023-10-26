@@ -1,0 +1,164 @@
+delivery excellence
+
+
+A Delivery Excellence for my current Spinnaker project by enhancing project delivery efficiency, quality, and customer satisfaction within the current financial year. This will be accomplished through increasing on-time delivery, strengthening communication and collaboration,
+continuously improving processes, monitoring and improving customer satisfaction, and investing in the professional
+development of the project team.
+
+
+
+Technical
+
+
+Enhancing Technical/Domain Knowledge by continuously improving technical expertise, staying updated 
+ with emerging technologies, deepening understanding of Spinnaker technical landscape, fostering cross-functional 
+ collaboration, developing subject matter expertise, mentoring and transferring knowledge, collaborating with external
+ experts, encouraging continuous learning, applying technical knowledge to improve project delivery, and tracking
+ industry best practices.
+ 
+ customer orient
+ 
+ Within my current Spinnaker project & IMSS PRACTISE, ensure timely reporting, quality deliverables, 
+ flexibility across  multiple projects and technologies as needed, clear technical and email communication,
+ proactive identification  and escalation of bottlenecks, gaps, and show-stoppers, and minimize escalations 
+ from internal and external customers,  to drive success and customer satisfaction in the specific context of 
+ the ongoing project.
+ 
+ innovation
+ 
+ Drive innovation and go the extra mile by suggesting the applicability of new technologies/trends/tools,  
+ collaborating with team members on demos developing personal expertise assisting in candidate selection/interviewing, 
+ and contributing to  practice development by working on DataOps/DataKitchen & provide training and knowledge transfer to 
+ colleagues  on Logic Monitor, sharing expertise and insights to enhance their understanding and proficiency in utilizing 
+ the tool effectively for monitoring and managing systems and applications
+ 
+ self development
+ 
+ Focus on self-development by targeting the completion of certifications in Data kitchen and Logic Monitor within this
+ financial year. Invest time and effort in studying, preparing, and successfully completing the certification exams for 
+ both technologies, enhancing technical proficiency, expanding knowledge, and staying up to date with industry best practices 
+ in data management and monitoring. 
+ 
+ 
+ business sucess
+ 
+ 
+ Achieve business success by prioritizing customer satisfaction through flexibility 
+ in working shifts and locations, understanding customer expectations, ensuring timely submission of timesheets 
+ and status reports for efficient
+ 
+ 
+ team working
+ 
+ collaboration and teamwork by open communication, building trust and respect,
+ promoting knowledge sharing, establishing clear roles and responsibilities, internal Training sessions 
+ for Practice & Delivery teams - Conduct trainings to the junior team members as a skill/knowledge 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ import groovy.sql.Sql
+
+Class.forName("com.sybase.jdbc4.jdbc.SybDriver")
+
+// Get basic info to connect
+def hostname = hostProps.get("system.hostname")
+def user = hostProps.get("sybase.user")
+def pass = hostProps.get("sybase.pass")
+def port = 21000
+
+def wildvalue = instanceProps.get("wildvalue")
+
+// Construct an SQL instance with a URL and a driver
+def url = "jdbc:sybase:Tds:${hostname}:${port}"
+def sql = Sql.newInstance(url, user, pass, "com.sybase.jdbc4.jdbc.SybDriver")
+
+try {
+    // Drop the table WNLsegments_logsegment if it exists
+    
+     sql.execute("if exists (select 1 from tempdb..sysobjects where name = 'WNLsegments_logsegment') drop table tempdb..WNLsegments_logsegment")
+     sql.execute("if exists (select 1 from tempdb..sysobjects where name = 'WNLdblist_logsegment') drop table tempdb..WNLdblist_logsegment")
+    // Create a temporary table WNLdblist_logsegment to store database information
+    def query1 = """
+        select dbid, name as dbname, (case when status2 & 32768 = 32768 then 'MIX' else 'SEP' end) as logtype 
+        into tempdb..WNLdblist_logsegment 
+        from master..sysdatabases 
+        where status2 & 16 <> 16
+    """
+    sql.execute(query1)
+
+    //println("Temporary table WNLdblist_logsegment created.")
+
+    // Fetch the data directly without creating temporary tables using eachRow
+    def query = """
+        set nocount on
+        declare @dbid int,
+        @maxdbid int,
+        @dbname varchar(50),
+        @logtype char(3)
+        select @dbid=min(dbid),@maxdbid=max(dbid) from tempdb..WNLdblist_logsegment
+        while @dbid <= @maxdbid
+        begin
+            select @dbname=dbname,@logtype = logtype from tempdb..WNLdblist_logsegment where dbid=@dbid
+            use @dbname
+
+            declare @dbsize integer
+            select db_name() dbname, s.name segname, s.segment, u.segmap,u.size, curunreservedpgs(db_id(), u.lstart, u.unreservedpgs) unreservedpgs
+            into tempdb..WNLsegments_logsegment
+            from master..sysusages u, syssegments s
+            where u.dbid=db_id() and power(2,s.segment) = u.segmap & power(2,s.segment)  
+            order by s.segment
+
+            declare @pgsize integer
+            select @pgsize=low/1024 from master.dbo.spt_values where number = 1 and type = 'E'
+            select @dbsize=((sum(size)*@pgsize)/1024) from master..sysusages where dbid=@dbid
+
+            select top 1 db_id(dbname),dbname as DBNAME,
+            convert(integer,(sum(size)*@pgsize)/1024) as TOT_SEG_SIZE_MB,
+            convert(integer,((sum(size)-sum(unreservedpgs))*@pgsize)/1024) as SEG_USED_MB, 
+            convert(integer,(sum(unreservedpgs)*@pgsize)/1024) as SEG_FREE_MB,
+            convert(integer,100*(sum(size)-sum(unreservedpgs))/sum(size)) as PERCENT_USED_SEG_MB
+            from tempdb..WNLsegments_logsegment
+            where segname='logsegment'
+            group by dbname,segment
+            order by dbname,segment
+            drop table tempdb..WNLsegments_logsegment
+            select @dbid=min(dbid) from tempdb..WNLdblist_logsegment where dbid > @dbid
+        end
+    """
+
+    // Print debug information
+   // println("Executing the main SQL query...")
+    //println("Query:\n$query")
+
+    // Fetch the data using eachRow and print debug information
+    sql.eachRow(query) { row ->
+        // Process the row and print or do something with the data
+        if ("${row.DBNAME}" == wildvalue) {
+            // Filtered database found, print statistics
+            println("DBNAME: ${row.DBNAME}")
+            println("TOT_SEG_SIZE_MB: ${row.TOT_SEG_SIZE_MB}")
+            println("SEG_USED_MB: ${row.SEG_USED_MB}")
+            println("SEG_FREE_MB: ${row.SEG_FREE_MB}")
+            println("PERCENT_USED_SEG_MB: ${row.PERCENT_USED_SEG_MB}")
+            println()
+        }
+    }
+
+    // Drop the table WNLsegments_logsegment if it exists
+    sql.execute("if exists (select 1 from tempdb..sysobjects where name = 'WNLsegments_logsegment') drop table tempdb..WNLsegments_logsegment")
+
+    // Drop the table WNLdblist_logsegment if it exists
+    sql.execute("if exists (select 1 from tempdb..sysobjects where name = 'WNLdblist_logsegment') drop table tempdb..WNLdblist_logsegment")
+
+    // Ensure the SQL connection is closed regardless of success or failure
+    sql.close()
+} catch (Exception e) {
+    // Handle any exceptions that occurred during execution
+    println("An error occurred: ${e.message}")
+    e.printStackTrace()
+}

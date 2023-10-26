@@ -1,0 +1,1089 @@
+select spid =          convert(varchar(4),sp.spid),
+       status =        convert(varchar(10),sp.status),
+       loginame =      substring(sl.name,1,10),
+       hostname =      convert(varchar(8),sp.hostname),
+       blocked_SPID =  convert(varchar(4), sp.blocked),
+       dbname =        convert(varchar(9), sd.name),
+       command =       substring(sp.cmd,1,14),
+       program_name =  convert(varchar(12),sp.program_name) 
+
+from master..sysprocesses sp,
+     master..syslogins sl,
+     master..sysdatabases sd
+where sp.uid = sl.suid and sp.dbid = sd.dbid
+
+
+========================================================================================
+import groovy.sql.Sql
+
+Class.forName("com.sybase.jdbc4.jdbc.SybDriver")
+
+// Get basic info to connect
+def hostname = hostProps.get("system.hostname")
+def user = hostProps.get("sybase.user")
+def pass = hostProps.get("sybase.pass")
+def port = 21000
+
+def wildvalue = instanceProps.get("wildvalue")
+
+// Construct an SQL instance with a URL and a driver
+def url = "jdbc:sybase:Tds:${hostname}:${port}"
+def sql = Sql.newInstance(url, user, pass, "com.sybase.jdbc4.jdbc.SybDriver")
+
+try {
+    println "Connecting to: ${url}"
+    println "Using database: ${wildvalue}"
+
+    // Set the current database to the target database
+    sql.execute("USE ${wildvalue}")
+    println "Database switched successfully."
+
+    // Execute the SQL query to retrieve segment information
+    def query = """
+        SELECT COUNT(*) 
+        FROM master..sysprocesses sp,
+             master..syslogins sl,
+              master..sysdatabases sd
+        WHERE sp.uid = sl.suid
+        and db_id('${wildvalue}') = db_id('${wildvalue}')
+    """
+    println "Executing query: ${query}"
+    def result = sql.firstRow(query)
+
+    // Retrieve the count value
+    def rowCount = result[0] ?: result['rowCount']
+
+    println "Count: ${rowCount}"
+} catch (Exception e) {
+    println "An error occurred: ${e.message}"
+    e.printStackTrace()
+} finally {
+    sql.close()
+}
+=================================================================================================
+
+===================================================================================================
+import groovy.sql.Sql
+
+Class.forName("com.sybase.jdbc4.jdbc.SybDriver")
+
+// Get basic info to connect
+def hostname = hostProps.get("system.hostname")
+def user = hostProps.get("sybase.user")
+def pass = hostProps.get("sybase.pass")
+def port = 21000
+
+def wildvalue = instanceProps.get("wildvalue")
+
+// Construct an SQL instance with a URL and a driver
+def url = "jdbc:sybase:Tds:${hostname}:${port}"
+def sql = Sql.newInstance(url, user, pass, "com.sybase.jdbc4.jdbc.SybDriver")
+
+try {
+    println "Connecting to: ${url}"
+    println "Using database: ${wildvalue}"
+
+    // Set the current database to the target database
+    sql.execute("USE ${wildvalue}")
+    println "Database switched successfully."
+
+    // Retrieve the database ID for the specified database
+  
+    // Execute the SQL query to retrieve segment information
+    def query = """
+        SELECT COUNT(*) AS row_count,
+    spid =convert(varchar(4),sp.spid),
+status =convert(varchar(10),sp.status),
+loginame =substring(sl.name,1,10),
+hostname =convert(varchar(8),sp.hostname),
+blocked_SPID = convert(varchar(4), sp.blocked),
+dbname = convert(varchar(9), sd.name),
+command =substring(sp.cmd,1,14),
+program_name =convert(varchar(12),sp.program_name)
+
+from master..sysprocesses sp,
+master..syslogins sl,
+master..sysdatabases sd
+where sp.uid = sl.suid and sp.dbid = db_id('${wildvalue}')
+    """
+    println "Executing query:\n${query}"
+    def result = sql.firstRow(query)
+
+    // Retrieve the count value
+    def rowCount = result.row_count
+
+    println "Count: ${rowCount}"
+
+    // Print the column values of the first row
+    println "SPID: ${result[1]}"
+    println "Status: ${result[2]}"
+    println "Login Name: ${result[3]}"
+    println "Host Name: ${result[4]}"
+    println "Blocked SPID: ${result[5]}"
+    println "Database Name: ${result[6]}"
+    println "Command: ${result[7]}"
+    println "Program Name: ${result[8]}"
+} catch (Exception e) {
+    println "An error occurred: ${e.message}"
+    e.printStackTrace()
+} finally {
+    sql.close()
+}
+=========================
+
+we have to discover instance  for each database name and then use this
+ select spid =          convert(varchar(4),sp.spid),
+       status =        convert(varchar(10),sp.status),
+       loginame =      substring(sl.name,1,10),
+       hostname =      convert(varchar(8),sp.hostname),
+       blocked_SPID =  convert(varchar(4), sp.blocked),
+       dbname =        convert(varchar(9), sd.name),
+       command =       substring(sp.cmd,1,14),
+       program_name =  convert(varchar(12),sp.program_name) 
+
+from master..sysprocesses sp,
+     master..syslogins sl,
+     master..sysdatabases sd
+where sp.uid = sl.suid and sp.dbid = sd.dbid
+
+to create instance for each databse , 
+=============================================================================================
+import com.jcraft.jsch.JSch
+import com.santaba.agent.util.Settings
+
+host = hostProps.get("system.hostname")
+user = hostProps.get("ssh.user")
+pass = hostProps.get("ssh.pass")
+port = hostProps.get("ssh.port")?.toInteger() ?: 22
+cert = hostProps.get("ssh.cert") ?: '~/.ssh/id_rsa'
+timeout = 15000 // timeout in milliseconds
+
+def azureHost = hostProps.get("system.azure.privateIpAddress")
+if (azureHost && hostProps.get("auto.network.resolves") == "false") host = azureHost
+
+try {
+    def command = "cat /proc/diskstats"
+
+    // We want to ignore these types of filesystems
+    def filtered_devices = ["none", "ram", "loop", "cd", "fd"]
+
+    def disk_pattern = ~/^\s+(\d+)\s+(\d+)\s([a-zA-Z0-9]+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)/
+
+    // save command output and split on newlines.
+    def command_output = getCommandOutput(command)
+
+    command_output.eachLine { line ->
+        // yes. process it
+        def device_matcher = disk_pattern.matcher(line)
+
+        if (device_matcher) {
+            // match device name
+            def device = device_matcher[0][3]
+
+            println device + ".reads=" + device_matcher[0][4]
+            println device + ".readsMerged=" + device_matcher[0][5]
+
+            // Linux sectors are always 512 bytes
+            println device + ".bytesRead=" + device_matcher[0][6].toBigInteger() * 512
+
+            println device + ".readTime=" + device_matcher[0][7]
+            println device + ".writes=" + device_matcher[0][8]
+            println device + ".writesMerged=" + device_matcher[0][9]
+            println device + ".bytesWritten=" + device_matcher[0][10].toBigInteger() * 512
+            println device + ".writeTime=" + device_matcher[0][11]
+            println device + ".activeIOs=" + device_matcher[0][12]
+
+            println device + ".busyTime=" + device_matcher[0][13]
+            println device + ".weightedms=" + device_matcher[0][14]
+        }
+    }
+
+    return 0
+} catch (Exception e) {
+    println "Unexpected Exception: " + e
+    return 1
+}
+
+def getCommandOutput(String input_command) {
+    try {
+        // instantiate JSCH object
+        jsch = new JSch()
+
+        // do we have a user and no pass?
+        if (user && !pass) {
+            // Yes, so let's try connecting via cert
+            jsch.addIdentity(cert)
+        }
+
+        // create session
+        session = jsch.getSession(user, host, port)
+
+        // given we are running non-interactively, we will automatically accept new host keys
+        session.setConfig("StrictHostKeyChecking", "no")
+        String authMethod = Settings.getSetting(Settings.SSH_PREFEREDAUTHENTICATION, Settings.DEFAULT_SSH_PREFEREDAUTHENTICATION)
+        session.setConfig("PreferredAuthentications", authMethod)
+
+        // set session timeout, in milliseconds
+        session.setTimeout(timeout)
+
+        // is the host configured with a user and password?
+        if (pass) {
+            // set password
+            session.setPassword(pass)
+        }
+
+        // connect
+        session.connect()
+
+        // execute command
+        channel = session.openChannel("exec")
+        channel.setCommand(input_command)
+
+        // collect command output
+        def commandOutput = channel.getInputStream()
+        channel.connect()
+
+        def output = commandOutput.text
+
+        // disconnect
+        channel.disconnect()
+
+        return output
+    } catch (Exception e) {
+        throw new RuntimeException("Error executing command: ${input_command}", e)
+    } finally {
+        session.disconnect()
+    }
+}
+=================================================================================================
+import groovy.json.JsonBuilder
+import groovy.sql.Sql
+import com.jcraft.jsch.JSch
+import com.santaba.agent.util.Settings
+
+
+host = hostProps.get("system.hostname")
+user = hostProps.get("ssh.user")
+pass = hostProps.get("ssh.pass")
+port = hostProps.get("ssh.port")?.toInteger() ?: 22
+cert = hostProps.get("ssh.cert") ?: '~/.ssh/id_rsa'
+timeout = 15000 // timeout in milliseconds
+
+
+
+
+
+def logFilePath = "/tmp/BTS01DEV_WNL_DS.log" // Replace with the actual log file path
+
+// Keywords to search for in the log file
+def keywords = [
+    "warning", "severity", "fail", "unmirror", "mirror exit", "not enough",
+    "error", "suspect", "corrupt", "correct", "deadlock", "critical",
+    "allow", "infect", "error", "full", "problem", "unable", "not found",
+    "threshold", "couldn", "not valid", "invalid", "NO_LOG", "logsegment",
+    "syslogs", "stacktrace"
+]
+
+// Create a JSON builder
+def jsonBuilder = new JsonBuilder()
+
+// Process the log file line by line
+new File(logFilePath).eachLine { line ->
+    if (keywords.any { keyword -> line.toLowerCase().contains(keyword.toLowerCase()) }) {
+        jsonBuilder.matchingLines {
+            line.trim()
+        }
+    }
+}
+
+// Convert the JSON builder to a JSON string
+def jsonString = jsonBuilder.toPrettyString()
+
+// Print the JSON string
+println(jsonString)
+================================================================================================
+import groovy.json.JsonBuilder
+import groovy.sql.Sql
+
+// Get basic info to connect
+def hostname = hostProps.get("system.hostname")
+def user = hostProps.get("sybase.user")
+def pass = hostProps.get("sybase.pass")
+def port = 21000
+
+// Construct an SQL instance with a URL and a driver
+def url = "jdbc:sybase:Tds:" + hostname + ":21000"
+def driver = "com.sybase.jdbc4.jdbc.SybDriver"
+
+// Create a connection to the SQL server
+def sql = Sql.newInstance(url, user, pass, driver)
+
+def logFilePath = "/tmp/BTS01DEV_WNL_DS.log" // Replace with the actual log file path
+
+// Keywords to search for in the log file
+def keywords = [
+    "warning", "severity", "fail", "unmirror", "mirror exit", "not enough",
+    "error", "suspect", "corrupt", "correct", "deadlock", "critical",
+    "allow", "infect", "error", "full", "problem", "unable", "not found",
+    "threshold", "couldn", "not valid", "invalid", "NO_LOG", "logsegment",
+    "syslogs", "stacktrace"
+]
+
+// Keep track of the last processed position in the log file
+def lastPosition = 0
+
+while (true) {
+    // Open the log file
+    def file = new RandomAccessFile(logFilePath, "r")
+    
+    // Set the position to the last processed position
+    file.seek(lastPosition)
+    
+    // Read new lines from the log file
+    def line
+    while ((line = file.readLine()) != null) {
+        line = line.trim()
+        if (keywords.any { keyword -> line.toLowerCase().contains(keyword.toLowerCase()) }) {
+            println("Matching line: $line")
+        }
+    }
+    
+    // Update the last processed position
+    lastPosition = file.getFilePointer()
+    
+    // Close the log file
+    file.close()
+    
+    // Wait for some time before checking for new events again
+  //  Thread.sleep(5000) // Adjust the duration as needed
+}
+===================================================================================================
+import groovy.json.JsonBuilder
+import groovy.sql.Sql
+
+import java.io.BufferedReader
+import java.io.FileReader
+
+// Get basic info to connect
+def hostname = hostProps.get("system.hostname")
+def user = hostProps.get("sybase.user")
+def pass = hostProps.get("sybase.pass")
+def port = 21000
+
+// Construct an SQL instance with a URL and a driver
+def url = "jdbc:sybase:Tds:" + hostname + ":21000"
+def driver = "com.sybase.jdbc4.jdbc.SybDriver"
+
+// Create a connection to the SQL server
+def sql = Sql.newInstance(url, user, pass, driver)
+
+def logFilePath = "/tmp/BTS01DEV_WNL_DS.log" // Replace with the actual log file path
+
+// Keywords to search for in the log file
+def keywords = [
+    "warning", "severity", "fail", "unmirror", "mirror exit", "not enough",
+    "error", "suspect", "corrupt", "correct", "deadlock", "critical",
+    "allow", "infect", "error", "full", "problem", "unable", "not found",
+    "threshold", "couldn", "not valid", "invalid", "NO_LOG", "logsegment",
+    "syslogs", "stacktrace"
+]
+
+// Retrieve the last processed position from the previous run or initialize it to 0
+def lastPosition = loadLastPosition()
+
+while (true) {
+    def fileReader = new FileReader(logFilePath)
+    def reader = new BufferedReader(fileReader)
+
+    // Skip to the last processed position
+    reader.skip(lastPosition)
+
+    def matchingLines = []
+    def currentLinePosition = lastPosition
+
+    def line
+    while ((line = reader.readLine()) != null) {
+        line = line.trim()
+        if (keywords.any { keyword -> line.toLowerCase().contains(keyword.toLowerCase()) }) {
+            matchingLines.add(line)
+        }
+        currentLinePosition += line.length() + 1 // +1 to account for the line break
+    }
+
+    // Close the reader
+    reader.close()
+
+    // Print the matching lines as JSON
+    matchingLines.each { line ->
+        def json = new JsonBuilder(line)
+        println(json.toPrettyString())
+    }
+
+    // Update the last processed position
+    lastPosition = currentLinePosition
+
+    // Save the last processed position for the next run
+    saveLastPosition(lastPosition)
+
+    // Wait for some time before checking for new events again
+    Thread.sleep(5000) // Adjust the duration as needed
+}
+
+def loadLastPosition() {
+    // Implement the logic to load the last processed position from the previous run
+    // For example, you can store it in a file or a database
+    // Return 0 if the position is not available
+    return 0
+}
+
+def saveLastPosition(position) {
+    // Implement the logic to save the last processed position for the next run
+    // For example, you can store it in a file or a database
+    // This allows the script to resume from the last processed position in the next run
+    // You can also consider using a persistent storage for better reliability
+}
+===============================================================================================
+log file -versio:1
+================================================================================================
+import groovy.json.JsonBuilder
+import groovy.sql.Sql
+
+import java.io.BufferedReader
+import java.io.FileReader
+
+// Get basic info to connect
+def hostname = hostProps.get("system.hostname")
+def user = hostProps.get("sybase.user")
+def pass = hostProps.get("sybase.pass")
+def port = 21000
+
+// Construct an SQL instance with a URL and a driver
+def url = "jdbc:sybase:Tds:" + hostname + ":21000"
+def driver = "com.sybase.jdbc4.jdbc.SybDriver"
+
+// Create a connection to the SQL server
+def sql = Sql.newInstance(url, user, pass, driver)
+
+def logFilePath = "/tmp/BTS01DEV_WNL_DS.log" // Replace with the actual log file path
+
+// Keywords to search for in the log file
+def keywords = [
+    "warning", "severity", "fail", "unmirror", "mirror exit", "not enough",
+    "error", "suspect", "corrupt", "correct", "deadlock", "critical",
+    "allow", "infect", "error", "full", "problem", "unable", "not found",
+    "threshold", "couldn", "not valid", "invalid", "NO_LOG", "logsegment",
+    "syslogs", "stacktrace"
+]
+
+// Retrieve the last processed position from the previous run or initialize it to 0
+def lastPosition = loadLastPosition()
+
+while (true) {
+    def fileReader = new FileReader(logFilePath)
+    def reader = new BufferedReader(fileReader)
+
+    // Skip to the last processed position
+    reader.skip(lastPosition)
+
+    def matchingLines = []
+    def currentLinePosition = lastPosition
+
+    def line
+    while ((line = reader.readLine()) != null) {
+        line = line.trim()
+        if (keywords.any { keyword -> line.toLowerCase().contains(keyword.toLowerCase()) }) {
+            matchingLines.add(line)
+        }
+        currentLinePosition += line.length() + 1 // +1 to account for the line break
+    }
+
+    // Close the reader
+    reader.close()
+
+    // Print the matching lines as JSON
+    matchingLines.each { matchingLine ->
+        def json = new JsonBuilder(matchingLine)
+        println(json.toPrettyString())
+    }
+
+    // Update the last processed position
+    lastPosition = currentLinePosition
+
+    // Save the last processed position for the next run
+    saveLastPosition(lastPosition)
+
+    // Wait for some time before checking for new events again
+   Thread.sleep(5000) // Adjust the duration as needed
+}
+
+def loadLastPosition() {
+    // Implement the logic to load the last processed position from the previous run
+    // For example, you can store it in a file or a database
+    // Return 0 if the position is not available
+    return 0
+}
+
+def saveLastPosition(position) {
+    // Implement the logic to save the last processed position for the next run
+    // For example, you can store it in a file or a database
+    // This allows the script to resume from the last processed position in the next run
+    // You can also consider using a persistent storage for better reliability
+}
+==================================================================================================
+===============================================================================================
+log file -versio:2
+================================================================================================
+
+import groovy.json.JsonBuilder
+import groovy.sql.Sql
+
+import java.io.BufferedReader
+import java.io.FileReader
+
+// Get basic info to connect
+def hostname = hostProps.get("system.hostname")
+def user = hostProps.get("sybase.user")
+def pass = hostProps.get("sybase.pass")
+def port = 21000
+
+// Construct an SQL instance with a URL and a driver
+def url = "jdbc:sybase:Tds:" + hostname + ":21000"
+def driver = "com.sybase.jdbc4.jdbc.SybDriver"
+
+// Create a connection to the SQL server
+def sql = Sql.newInstance(url, user, pass, driver)
+
+def logFilePath = "/tmp/BTS01DEV_WNL_DS.log" // Replace with the actual log file path
+
+// Keywords to search for in the log file
+def keywords = [
+    "warning", "severity", "fail", "unmirror", "mirror exit", "not enough",
+    "error", "suspect", "corrupt", "correct", "deadlock", "critical",
+    "allow", "infect", "error", "full", "problem", "unable", "not found",
+    "threshold", "couldn", "not valid", "invalid", "NO_LOG", "logsegment",
+    "syslogs", "stacktrace"
+]
+
+// Retrieve the last processed position from the previous run or initialize it to 0
+def lastPosition = loadLastPosition()
+
+def fileReader = new FileReader(logFilePath)
+def reader = new BufferedReader(fileReader)
+
+def currentLinePosition = lastPosition
+
+// Skip to the last processed position
+reader.skip(lastPosition)
+
+while (true) {
+    def line = reader.readLine()?.trim()
+
+    if (line) {
+        if (keywords.any { keyword -> line.toLowerCase().contains(keyword.toLowerCase()) }) {
+            def json = new JsonBuilder(line)
+            println(json.toPrettyString())
+        }
+
+        currentLinePosition += line.length() + 1 // +1 to account for the line break
+    } else {
+        // Wait for some time before checking for new events again
+        Thread.sleep(10) // Adjust the duration as needed
+    }
+
+    // Save the last processed position for the next run
+    saveLastPosition(currentLinePosition)
+}
+
+// Close the reader
+reader.close()
+
+def loadLastPosition() {
+    // Implement the logic to load the last processed position from the previous run
+    // For example, you can store it in a file or a database
+    // Return 0 if the position is not available
+    return 0
+}
+
+def saveLastPosition(position) {
+    // Implement the logic to save the last processed position for the next run
+    // For example, you can store it in a file or a database
+    // This allows the script to resume from the last processed position in the next run
+    // You can also consider using a persistent storage for better reliability
+}
+
+===============================================================================================
+log file -versio:3
+================================================================================================
+
+================================================================================================
+import groovy.sql.Sql
+import java.io.BufferedReader
+import java.io.FileReader
+import groovy.json.JsonBuilder
+
+def hostname = hostProps.get("system.hostname")
+def user = hostProps.get("sybase.user")
+def pass = hostProps.get("sybase.pass")
+def port = 21000
+
+def url = "jdbc:sybase:Tds:" + hostname + ":21000"
+def driver = "com.sybase.jdbc4.jdbc.SybDriver"
+
+def sql = Sql.newInstance(url, user, pass, driver)
+
+def filePath = "/tmp/BTS01DEV_WNL_DS.log"
+def command = "head -n 1 $filePath"
+def outputValue = ""
+
+def socket = new java.net.Socket(hostname, port)
+socket.withStreams { InputStream input, OutputStream output ->
+    output.withWriter { writer ->
+        writer.println(command)
+        writer.flush()
+
+        input.withReader { reader ->
+            outputValue = reader.readLine()
+        }
+    }
+}
+
+def jsonObject = new JsonBuilder()
+jsonObject {
+    "event" {
+        "data" outputValue
+    }
+}
+
+def jsonString = jsonObject.toPrettyString()
+
+println(jsonString)
+========================================================================================================
+import groovy.sql.Sql
+
+def hostname = hostProps.get("system.hostname")
+def user = hostProps.get("sybase.user")
+def pass = hostProps.get("sybase.pass")
+def port = 21000
+
+def url = "jdbc:sybase:Tds:" + hostname + ":21000"
+def driver = "com.sybase.jdbc4.jdbc.SybDriver"
+
+def sql = Sql.newInstance(url, user, pass, driver)
+
+if (sql.connection) {
+    println("Connected to Sybase server on ${hostname}")
+
+    def filePath = "/tmp/BTS01DEV_WNL_DS.log" // Replace with the actual file path on the Linux machine
+
+    def file = new File(filePath)
+    if (file.exists() && file.isFile()) {
+        def firstLine = file.text.split("\n").find { it.trim() != "" }
+        if (firstLine) {
+            println("First line of the file: $firstLine")
+        } else {
+            println("File is empty")
+        }
+    } else {
+        println("File not found or is not a regular file")
+    }
+} else {
+    println("Failed to connect to Sybase server on ${hostname}")
+}
+====================================================================================================
+import groovy.sql.Sql
+
+def hostname = hostProps.get("system.hostname")
+def user = hostProps.get("sybase.user")
+def pass = hostProps.get("sybase.pass")
+def port = 21000
+
+def url = "jdbc:sybase:Tds:" + hostname + ":21000"
+def driver = "com.sybase.jdbc4.jdbc.SybDriver"
+
+def sql = Sql.newInstance(url, user, pass, driver)
+
+if (sql.connection) {
+    println("Connected to Sybase server on ${hostname}")
+
+    def filePath = "/tmp/BTS01DEV_WNL_DS.log" // Replace with the actual file path on the Linux machine
+
+    def file = new File(filePath)
+    if (file.exists() && file.isFile()) {
+        def lines = file.readLines().take(50)
+
+        lines.eachWithIndex { line, index ->
+            println("Line ${index + 1}: $line")
+        }
+    } else {
+        println("File not found or is not a regular file")
+    }
+} else {
+    println("Failed to connect to Sybase server on ${hostname}")
+}
+===================================================================================================
+
+important
+
+===================================================================================================
+
+import groovy.sql.Sql
+import groovy.json.JsonBuilder
+
+def hostname = hostProps.get("system.hostname")
+def user = hostProps.get("sybase.user")
+def pass = hostProps.get("sybase.pass")
+def port = 21000
+
+def url = "jdbc:sybase:Tds:" + hostname + ":21000"
+def driver = "com.sybase.jdbc4.jdbc.SybDriver"
+
+def sql = Sql.newInstance(url, user, pass, driver)
+
+if (sql.connection) {
+    println("Connected to Sybase server on ${hostname}")
+
+    def filePath = "/tmp/BTS01DEV_WNL_DS.log" // Replace with the actual file path on the Linux machine
+    
+    def file = new File(filePath)
+    if (file.exists() && file.isFile()) {
+        def lines = file.readLines()
+        
+        // Search for specific error words in the lines
+        def errorWords = ["warning", "severity", "fail", "unmirror", "mirror exit", "not enough", "error", "suspect", "corrupt", "correct", "deadlock", "critical", "allow", "infect", "error", "full", "problem", "unable", "not found", "threshold", "couldn", "not valid", "invalid", "NO_LOG", "logsegment", "syslogs", "stacktrace"]
+        
+        def matchedLines = lines.findAll { line ->
+            errorWords.any { word -> line.toLowerCase().contains(word) }
+        }
+        
+        // Create a JSON object with the matched lines
+        def jsonObject = new JsonBuilder(lines: matchedLines)
+        
+        println("JSON object:")
+        println(jsonObject.toPrettyString())
+    } else {
+        println("File not found or is not a regular file")
+    }
+} else {
+    println("Failed to connect to Sybase server on ${hostname}")
+}
+============================================================================================
+import groovy.sql.Sql
+
+def hostname = hostProps.get("system.hostname")
+def user = hostProps.get("sybase.user")
+def pass = hostProps.get("sybase.pass")
+def port = 21000
+
+def url = "jdbc:sybase:Tds:" + hostname + ":21000"
+def driver = "com.sybase.jdbc4.jdbc.SybDriver"
+
+def sql = Sql.newInstance(url, user, pass, driver)
+
+if (sql.connection) {
+    println("Connected to Sybase server on ${hostname}")
+
+    def filePath = "/tmp/BTS01DEV_WNL_DS.log" // Replace with the actual file path on the Linux machine
+
+    def file = new File(filePath)
+    if (file.exists() && file.isFile()) {
+        def lines = file.readLines()
+
+        // Define the keywords to search for
+        def keywords = [
+            "warning",
+            "error",
+            "fail",
+            // Add more keywords as needed
+        ]
+
+        // Find the lines that contain the keywords along with their indices
+        def matchedLines = []
+        lines.eachWithIndex { line, index ->
+            if (keywords.any { keyword -> line.toLowerCase().contains(keyword) }) {
+                matchedLines << [line: index + 1, message: line]
+            }
+        }
+
+        // Construct a JSON object with the events
+        def jsonObject = [:]
+        jsonObject.events = matchedLines
+
+        // Convert the JSON object to a string
+        def jsonString = groovy.json.JsonOutput.toJson(jsonObject)
+
+        println("JSON object:")
+        println(jsonString)
+    } else {
+        println("File not found or is not a regular file")
+    }
+} else {
+    println("Failed to connect to Sybase server on ${hostname}")
+}
+===================================================================================================
+
+
+{"events":[{"line":41,"message":"00:0000:00000:00000:2021/04/21 14:54:02.58 kernel Warning: Operating System stack size is greater than 2MB. If it is too large, ASE may run out of memory during thread creation. You can reconfigure it using 'limit' (csh) or 'ulimit' (bash)"},{"line":177,"message":"00:0006:00000:00002:2021/04/21 14:54:03.46 kernel Warning: Cannot set console to nonblocking mode, switching to blocking mode."},{"line":313,"message":"00:0000:00000:00000:2021/04/21 16:42:08.18 kernel Warning: Operating System stack size is greater than 2MB. If it is too large, ASE may run out of memory during thread creation. You can reconfigure it using 'limit' (csh) or 'ulimit' (bash)"},{"line":636,"message":"00:0002:00000:00002:2021/04/21 16:41:26.28 kernel Warning: Cannot set console to nonblocking mode, switching to blocking mode."}
+
+{
+  "events": [
+    {
+      "line": 41,
+      "message": "00:0000:00000:00000:2021/04/21 14:54:02.58 kernel Warning: Operating System stack size is greater than 2MB. If it is too large, ASE may run out of memory during thread creation. You can reconfigure it using 'limit' (csh) or 'ulimit' (bash)"
+    },
+    {
+      "line": 177,
+      "message": "00:0006:00000:00002:2021/04/21 14:54:03.46 kernel Warning: Cannot set console to nonblocking mode, switching to blocking mode."
+    },
+    {
+      "line": 313,
+      "message": "00:0000:00000:00000:2021/04/21 16:42:08.18 kernel Warning: Operating System stack size is greater than 2MB. If it is too large, ASE may run out of memory during thread creation. You can reconfigure it using 'limit' (csh) or 'ulimit' (bash)"
+    },
+    {
+      "line": 636,
+      "message": "00:0002:00000:00002:2021/04/21 16:41:26.28 kernel Warning: Cannot set console to nonblocking mode, switching to blocking mode."
+    }
+  ]
+}
+
+========================================================================================================
+import groovy.sql.Sql
+import groovy.json.JsonBuilder
+import org.json.JSONObject
+
+def hostname = hostProps.get("system.hostname")
+def user = hostProps.get("sybase.user")
+def pass = hostProps.get("sybase.pass")
+def port = 21000
+
+def url = "jdbc:sybase:Tds:" + hostname + ":21000"
+def driver = "com.sybase.jdbc4.jdbc.SybDriver"
+
+def sql = Sql.newInstance(url, user, pass, driver)
+
+if (sql.connection) {
+   // println("Connected to Sybase server on ${hostname}")
+
+    def filePath = "/tmp/BTS01DEV_WNL_DS.log" // Replace with the actual file path on the Linux machine
+
+    def file = new File(filePath)
+    if (file.exists() && file.isFile()) {
+        def lines = file.readLines()
+
+        // Define the keywords to search for
+        def keywords = [
+            "warning",
+            "error",
+            "fail",
+            // Add more keywords as needed
+        ]
+
+        // Find the lines that contain the keywords along with their indices
+        def matchedLines = lines
+            .findAll { line -> keywords.any { keyword -> line.toLowerCase().contains(keyword) } }
+            .collect { line -> [line: lines.indexOf(line) + 1, message: line] }
+
+        // Construct the final JSON object
+        def json = new JsonBuilder()
+        json {
+            events matchedLines
+        }
+
+        // Convert the JSON object to a string
+        def jsonString = json.toString()
+
+        // Remove leading characters until the first '{' character
+        def startIndex = jsonString.indexOf('{')
+        def trimmedJsonString = jsonString.substring(startIndex)
+
+        // Create the JSONObject from the trimmed JSON string
+        def jsonObject = new JSONObject(trimmedJsonString)
+
+        println(jsonObject.toString())
+    } else {
+        println("File not found or is not a regular file")
+    }
+} else {
+    println("Failed to connect to Sybase server on ${hostname}")
+}
+=======================================================================================================
+import groovy.sql.Sql
+import groovy.json.JsonBuilder
+import org.json.JSONObject
+
+def hostname = hostProps.get("system.hostname")
+def user = hostProps.get("sybase.user")
+def pass = hostProps.get("sybase.pass")
+def port = 21000
+
+def url = "jdbc:sybase:Tds:" + hostname + ":21000"
+def driver = "com.sybase.jdbc4.jdbc.SybDriver"
+
+def sql = Sql.newInstance(url, user, pass, driver)
+
+if (sql.connection) {
+   // println("Connected to Sybase server on ${hostname}")
+
+    def filePath = "/tmp/BTS01DEV_WNL_DS.log" // Replace with the actual file path on the Linux machine
+
+    def file = new File(filePath)
+    if (file.exists() && file.isFile()) {
+        def lines = file.readLines()
+
+        // Define the keywords to search for
+        def keywords = [
+            "warning",
+            "error",
+            "fail",
+            // Add more keywords as needed
+        ]
+
+        // Find the lines that contain the keywords along with their indices
+        def matchedLines = lines
+            .findAll { line -> keywords.any { keyword -> line.toLowerCase().contains(keyword) } }
+            .collect { line -> [line: lines.indexOf(line) + 1, message: line] }
+
+        // Construct the final JSON object
+        def json = new JsonBuilder()
+        json {
+            events matchedLines
+        }
+
+        // Convert the JSON object to a string
+        def jsonString = json.toString()
+
+        // Remove leading characters until the first '{' character
+        def startIndex = jsonString.indexOf('{')
+        def trimmedJsonString = jsonString.substring(startIndex)
+
+        // Create the JSONObject from the trimmed JSON string
+        def jsonObject = new JSONObject(trimmedJsonString)
+
+        println(jsonObject.toString())
+    } else {
+        println("File not found or is not a regular file")
+    }
+} else {
+    println("Failed to connect to Sybase server on ${hostname}")
+}======================================================================================================
+
+import groovy.sql.Sql
+import groovy.json.JsonBuilder
+import org.json.JSONObject
+import java.nio.file.*
+
+
+def hostname = hostProps.get("system.hostname")
+def user = hostProps.get("sybase.user")
+def pass = hostProps.get("sybase.pass")
+def port = 21000
+
+def url = "jdbc:sybase:Tds:" + hostname + ":21000"
+def driver = "com.sybase.jdbc4.jdbc.SybDriver"
+
+def sql = Sql.newInstance(url, user, pass, driver)
+
+if (sql.connection) {
+   // println("Connected to Sybase server on ${hostname}")
+
+   
+// Define the path to the log file
+def logFilePath = '/tmp/ase.log'
+
+// Create a file object
+def logFile = new File(logFilePath)
+
+// Define the folder to monitor for changes
+def folderPath = '/path/to/folder'
+
+// Create a file system watcher for the folder
+def watcher = FileSystems.getDefault().newWatchService()
+
+// Register the folder for monitoring file events
+Paths.get(folderPath).register(watcher, StandardWatchEventKinds.ENTRY_MODIFY)
+
+// Continuously monitor for file changes
+while (true) {
+    // Wait for the next file event
+    def key = watcher.take()
+
+    // Process all the events in the key
+    key.pollEvents().each { event ->
+        // Get the event kind
+        def kind = event.kind()
+
+        // Get the file name associated with the event
+        def fileName = event.context().toString()
+
+        // Check if the modified file matches the log file
+        if (fileName == logFile.name) {
+            // Read the log file line by line
+            def logLines = []
+            logFile.eachLine { line, lineNumber ->
+                // Create a JSON object with line number and message
+                def logEntry = [lineNumber: lineNumber, message: line]
+                logLines << logEntry
+            }
+
+            // Convert the logLines to JSON string
+            def jsonOutput = new JsonBuilder(logLines).toPrettyString()
+
+            // Display the JSON output
+            println(jsonOutput)
+        }
+    }
+
+    // Reset the key to receive further events
+    key.reset()
+}
+==============================================================================================
+import groovy.sql.Sql
+import org.json.JSONArray
+import org.json.JSONObject
+import java.nio.file.*
+
+def hostname = hostProps.get("system.hostname")
+def user = hostProps.get("sybase.user")
+def pass = hostProps.get("sybase.pass")
+def port = 21000
+
+def url = "jdbc:sybase:Tds:" + hostname + ":21000"
+def driver = "com.sybase.jdbc4.jdbc.SybDriver"
+
+def sql = Sql.newInstance(url, user, pass, driver)
+
+if (sql.connection) {
+   // println("Connected to Sybase server on ${hostname}")
+
+   // Define the path to the log file
+   def logFilePath = '/tmp/ase.log'
+
+   // Create a file object
+   def logFile = new File(logFilePath)
+
+   // Check if the log file exists
+   if (logFile.exists()) {
+       // Read the log file line by line
+       def events = []
+       logFile.eachLine { line, lineNumber ->
+           // Skip empty lines and trim leading/trailing spaces
+           line = line.trim()
+           if (line) {
+               // Create a JSON object with "line" and "message" keys
+               def logEntry = new JSONObject()
+               logEntry.put("line", lineNumber)
+               logEntry.put("message", line)
+               events << logEntry
+           }
+       }
+
+       // Create a JSON object with "events" key and associated array value
+       def jsonObject = new JSONObject()
+       jsonObject.put("events", new JSONArray(events))
+
+       // Display the JSON output
+       println(jsonObject.toString(4))
+   } else {
+       println("Log file does not exist: ${logFilePath}")
+   }
+}
+==================================================================================================

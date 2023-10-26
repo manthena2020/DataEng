@@ -1,0 +1,11 @@
+systemctl edit jenkins
+
+[Service]
+Environment="JENKINS_PORT=9876"
+
+ctr r
+
+ctr o
+
+enter ==>> ctr x
+
