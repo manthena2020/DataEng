@@ -1,0 +1,3 @@
+[ansible@ip-172-31-47-208 ~]$ cat index.html
+Welcome to Ansible Demo From Gana Technologies
+[ansible@ip-172-31-47-208 ~]$

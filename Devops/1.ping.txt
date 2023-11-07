@@ -1,0 +1,11 @@
+[ansible@ip-172-31-47-208 ~]$ cat ping.yml
+---
+- hosts: all
+  gather_facts: no
+  remote_user: ansible
+  tasks:
+    - name: Test connection
+      ping:
+      remote_user: ansible
+...
+[ansible@ip-172-31-47-208 ~]$

@@ -1,0 +1,62 @@
+
+create this file 
+
+#pragma namespace("root\\CIMv2")
+class Win32_PerfRawData_PerfOS_Processor
+{
+    uint64 Timestamp_Sys100NS;
+    uint32 Frequency_Sys100NS;
+    uint32 PercentageIdle;
+    uint32 PercentageUserTime;
+    uint32 PercentagePrivilegedTime;
+    uint32 PercentageDPCTime;
+    uint32 PercentageInterruptTime;
+};
+
+
+Save this content to a text file with a .mof extension, such as "Win32_PerfRawData_PerfOS_Processor.mof."
+
+After creating the MOF file, you can copy it to the target server using appropriate file transfer methods.
+
+Compile on the Target Server:
+On the target server, you can compile the copied MOF file using the mofcomp command
+
+
+mofcomp Win32_PerfRawData_PerfOS_Processor.mof
+
+
+
+verifiy the class
+
+Get-WmiObject -Namespace "root\CIMv2" -Class Win32_PerfRawData_PerfOS_Processor
+
+
+
+
+
+
+
+
+
+$classDef = Get-CimClass -Namespace "root\CIMv2" -ClassName "Win32_PerfRawData_PerfOS_Processor"
+$mofContent = $classDef.Serialize()
+$mofContent | Out-File -FilePath "Win32_PerfRawData_PerfOS_Processor.mof"
+
+Get-WmiObject -Query "SELECT * FROM Meta_Class WHERE __Class = 'Win32_PerfRawData_PerfOS_Processor'" | ForEach-Object {
+    $_.GetText(1)
+}
+
+Tolist CLasses:
+
+
+Get-WmiObject -Namespace "root\CIMv2" -List | Select-Object -Property Name
+
+
+
+This will save the list into Text file to current directory
+
+Get-WmiObject -Namespace "root\CIMv2" -List | Select-Object -Property Name | Out-File -FilePath "WMI_Classes.txt"
+
+To remove WMi Class
+
+Remove-CimClass -Namespace "root\cimv2" -ClassName "Win32_PerfRawData_PerfOS_Processor"

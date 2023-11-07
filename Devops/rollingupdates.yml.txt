@@ -1,0 +1,15 @@
+[root@ip-172-31-1-207 ec2-user]# cat one.yml
+---
+- hosts: 172.31.8.4
+  become: true
+  serial:
+    - 10%
+    - name: Insert Index Page
+      template:
+       src: index.html
+       dest: /var/www/html/index.html
+      tags:
+        - deploy
+
+...
+[root@ip-172-31-1-207 ec2-user]#

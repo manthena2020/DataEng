@@ -1,0 +1,323 @@
+ansible ( Configuration management tool)
+
+configuration managenet tool --->>> 1000 servers --->>> http --->>> manual --->>>> 10 days --->> client --->> 30 mins..
+
+CM : automation tools , 1000 server --->>> application --->>> with in minits.. install.
+
+configuration managenet tools: chef , puppet and ansible.
+
+ansible --->>. latest tool --->>> trend.
+
+======================================================
+Ansible is an open source, a Configuration Management Tool and Deployment tool, maintained by Redhat.
+
+The main components of Ansible are playbooks, configuration management, deployment.
+
+Ansible uses playbooks to deploy, manage, build, test and configure anything from full server environments to custom compiled source code for applications.
+
+Ansible was written in Python.
+
+Ansible Features :
+
+Ansible manages machines in an agent-less  manner  using  SSH. Built on top of Python and hence provides a lot of Python’s functionality. YAML-Based Playbooks
+
+Uses SSH for secure connections.
+
+Follows Push based architecture for sending configurations.
+
+Push Based Vs Pull Based
+
+Tools like Puppet and Chef are pull based.
+
+Agents on the server periodically checks for the configuration information from central server (Master).
+
+Ansible is push based.
+
+Central server pushes the configuration information on target servers. You control when the changes are made on the servers.
+
+================================================
+
+
+chef , puppet --->> older version of configuration managenet tools: chef , puppet 
+
+ansible :
+
+1. defaultly comes with python in ansible
+
+3. Agent less architecture
+
+4. push based mechanism
+
+5. playbooks
+
+6. playbooks --->>> use script --->>> YML or YAML SCRIPT.
+
+7. main server : Ansible control manager , number of nodes 
+
+8. ansible will install in ACM , no need to install ansible on nodes. (agent less architecture)
+
+9. ACM and nodes -->> communivation via SSH.
+
+10. Only one Ansible control master and no .of nodes / target machines involved in ansible.
+
+11. Ansible have no . of modules ===>> written in python ===>> developers.
+
+chef / puppet :
+
+1. defaultly not comes with python in chef / puppet
+
+3. Agent architecture
+
+4. pull based mechanism.
+
+5. cookbooks
+
+6. cookbooks --->>> use script --->>> DSL GROOVY SCRIPT 
+
+7. main server : server , and no .of clients 
+
+8. chef / puppet  will install both server and clients. (agent architecture)
+
+9. chef / puppet --->>> server and client communication via SSH.
+
+10. There are no modules configration of the tasks.
+
+
+===============================================================================
+
+
+ANsible setup :
+
+1. we need take 3 ec2 instances  
+
+1. ACM  2 . Nodes / target machines.
+
+Ansible --->>> ACM and nodes --->> communication via SSH.
+
+The following steps are doing in all ACM and nodes.
+
+1. useradd ansible (usercreate)
+
+passwd ansible
+ansible
+ansible
+
+2. vi /etc/ssh/sshd_config
+
+#permit root login =yes (remove comment #)
+
+#Password authentication = yes (remove comment #)
+
+3. vi /etc/sudoers
+
+ansible     ALL=(ALL)           NOPASSWD: ALL
+
+4. service sshd start
+
+5. switching to ansible user
+
+su - ansible
+
+6. ssh-keygen -t rsa
+
+4 times enter (enter key press )
+
+7. sudo service sshd restart
+
+=======================================================
+
+From ACM.
+
+1. ssh-copyid node1ip
+type ansible user password
+
+2. ssh-copyid node2ip
+type ansible user password
+
+communication will happend between master and nodes.
+
+sudo yum install -y ansible ( sudo amazon-linux-extras install ansible2 -y --->>>use this)
+
+if not installing then run the below command
+
+sudo yum install epel-release 
+
+ansible --version
+
+vi /etc/ansible/ansible.cfg 
+
+#inventoryfile (remove comment)
+
+vi /etc/ansible/hosts (node information)
+
+####[webserver] -->> group (comments remove)
+
+node1 ip (private Ip)
+
+node2 ip (private Ip)
+
+[databse]  -->>>group
+
+:wq!
+
+
+ansible all -m ping
+
+=====================================================
+
+ansible all -m shell -a date: It will display date from all host machines.
+
+ansible all -m ping: It will ping all the servers which you have mentioned in inventory file (/etc/ansible/hosts).
+
+ansible all -m ping -o: It will display the output in single line.
+
+ansible all -m shell -a 'uptime' : Uptime of all the machines. Here m means module and -a means argument
+
+ansible all -m shell -a 'service httpd status' : Check the service status on all the machines.
+
+
+
+ansible adhoc commands :
+
+   15  ansible all -m yum -a "name=httpd state=present" --become
+   16  ansible all -m service -a "name=httpd state=started" --become
+   17  ansible --version
+   18  ansible all -m ping
+   19   ansible all -m yum -a "name=git state=present" --become
+   20   ansible webservers -m yum -a "name=git state=absent" --become
+   21   ansible webservers -m yum -a "name=httpd state=absent" --become
+   22   ansible webservers -m yum -a "name=httpd state=present" --become
+   23   ansible webservers -m service  -a "name=httpd state=started" --become
+   24  touch chiru
+   25  ls
+   26  ansible all -m copy -a "src=/home/ansible/chiru dest=/home/ansible" --become
+   27  pwd
+   28  ls
+   29  ansible webservers -m command -a 'ifconfig' --become
+   30  ansible 172.31.10.238 -m command -a 'uname -a' --become
+   31  ansible 172.31.2.79 -m command -a 'uname -a' --become
+   32  ansible 172.31.8.70 -m command -a 'uname -a' --become
+   33  ansible all -m command -a 'uname -a' --become
+   34  ansible all -m command -a 'df -h' --become
+   35  ansible all -m command -a 'free -m' --become
+   36  ansible all -m command -a 'fdisk -l' --become
+   37  ansible all -m command -a 'lsblk' --become
+   38  ansible-doc -l
+   39  history
+[ansible@ip-172-31-15-7 ~]$
+
+
+====================================================================
+
+playbooks :(yaml script)
+
+playbookname extension --->> .yml or .yaml
+
+ex:  copy.yml  or copy.yaml
+
+playbook : playbook contains list of plays / tasks and tasks contains list of modules, modules will execute entire playbook.
+
+
+ansible-playbook playbookname  ==>> to run a playbook..
+
+ansible-playbook copy.yml -------->>> play book to run
+
+ansible-playbook playbookname --syntax-check --->> syntax check.
+
+ansible-playbook playbookname --check --->>> dry run mode.
+
+===============================================================
+
+ansible integrate with jenkins and application deployment.
+
+step 1: publish overssh : plugin install
+
+step 2: configure ssh configuration between jenkins and ACM.
+
+step 3: jenkins dash board ==>> configure system ==>> ACM ==>> credentials ( username and password )
+
+step 4 : ACM : copy1.yml --->>> war copy to tomcat webapps ----->>> don't run.
+
+Step 5 : Node1 : tomcat install 
+
+Ste 6 : create jenkins job --->>> under free style
+
+scm --->>git url
+
+build -->> clean package
+
+
+
+
+172-31-28-226
+
+
+====================================================================
+
+history of today 
+
+[ansible@ip-172-31-41-39 playbooks]$ history
+    1  ssh-keygen -t rsa
+    2  sudo service sshd restart
+    3  ssh-copy-id 13.212.221.85
+    4  ssh-copy-id 54.254.215.194
+    5  sudo amazon-linux-extras install ansible2 -y
+    6  ansible --version
+    7  sudo vi /etc/ansible/ansible.cfg
+    8  sudo vi /etc/ansible/hosts
+    9  ansible all -m ping
+   10  ansible all -m ping -o
+   11  cd /opt/
+   12  sudo mkdir playbooks
+   13  cd playbooks/
+   14  ls
+   15  sudo vi file.yml
+   16  ls
+   17  ansible-playbook file.yml --syntax-check
+   18  ansible-playbook file.yml --check
+   19  ansible-playbook file.yml
+   20  ls
+   21  cd /etc
+   22  ls -l | grep foo.conf
+   23  ls
+   24  cd /opt/playbooks/
+   25  ls
+   26  sudo vi copy.yml
+   27  ansible-playbook copy.yml --syntax-check
+   28  ansible-playbook copy.yml --check
+   29  ansible-playbook copy.yml
+   30  ls
+   31  sudo vi users.yml
+   32  ansible-playbook users.yml
+   33  ls
+   34  sudo vi deploy.yml
+   35  ansible-playbook deploy.yml
+   36  ls
+   37  sudo vi copy1.yml
+   38  ls
+   39  sudo vi copy1.yml
+   40  pwd
+   41  ls
+   42  cd /home/ansible/
+   43  ls
+   44  cd opt/playbooks/
+   45  ls
+   46  cd /opt/playbooks/
+   47  ls
+   48  sudo vi copy1.yml
+   49  ansible-playbook copy1.yml
+   50  ls
+   51  history
+[ansible@ip-172-31-41-39 playbooks]$
+[ansible@ip-172-31-41-39 playbooks]$
+[ansible@ip-172-31-41-39 playbooks]$
+
+
+sudo cd /home/ansible/;ansible-playbook /home/ansible/copy.yml
+
+
+
+
+
+
+

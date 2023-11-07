@@ -1,0 +1,13 @@
+[ansible@ip-172-31-47-208 ~]$ cat five.yml
+---
+ - hosts: all
+   become: true
+   tasks:
+     - name: Copy ansible inventory file to all hostmachines
+       copy: src=/etc/ansible/hosts
+             dest=/tmp/
+             owner=root
+             group=root
+             mode=0666
+...
+[ansible@ip-172-31-47-208 ~]$

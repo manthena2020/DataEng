@@ -1,0 +1,16 @@
+[ansible@ip-172-31-47-208 ~]$ cat three.yml
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: Install Apache HTTP Server
+      yum: name=httpd update_cache=yes state=latest
+      notify:
+        - Start HTTP Server
+  handlers:
+    - name: Start HTTP Server
+      service:
+          name=httpd
+          state=restarted
+...
+[ansible@ip-172-31-47-208 ~]$

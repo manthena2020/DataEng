@@ -1,0 +1,46 @@
+[root@ip-172-31-15-213 ec2-user]# cat jenkins.yml
+---
+- hosts: 172.31.15.58
+  gather_facts: false
+  become: true
+  tasks:
+
+  - name: download jenkins.repo
+    get_url:
+     url: https://pkg.jenkins.io/redhat-stable/jenkins.repo
+     dest: /etc/yum.repos.d/jenkins.repo
+
+  - name: import jenkins key
+    rpm_key:
+     state: present
+     key: https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
+
+  - name: install jenkins
+    yum:
+     name: jenkins
+     state: present
+
+  - name: start jenkins
+    systemd:
+     name: jenkins
+     state: started
+
+  - name: enable jenkins
+    systemd:
+     name: jenkins
+     enabled: true
+
+  - name: sleep for 30 seconds and continue with play
+    wait_for:
+     delay: 30
+     port: 8080
+
+  - name: init password jenkin
+    shell: cat /var/lib/jenkins/secrets/initialAdminPassword
+    changed_when: false
+    register: result
+
+  - name: print init password jenkins
+    debug:
+     var: result.stdout
+[root@ip-172-31-15-213 ec2-user]#

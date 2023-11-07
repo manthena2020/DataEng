@@ -1,0 +1,19 @@
+[ansible@ip-172-31-47-208 ~]$ cat four.yml
+---
+- hosts: all
+  tasks:
+  - name: Display the date
+    command: date
+    register: dateOutPut
+    ignore_errors: yes
+  - name: Display the contents of dateOutPut
+    debug:
+     msg: "{{dateOutPut}}"
+  - name: Display the std output of dateOutPut
+    debug:
+     msg: "{{dateOutPut.stdout}}"
+  - name: Display the std error of dateOutPut
+    debug:
+      msg: "{{dateOutPut.stderr}}"
+...
+[ansible@ip-172-31-47-208 ~]$

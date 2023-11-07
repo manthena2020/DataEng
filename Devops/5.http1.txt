@@ -1,0 +1,15 @@
+[ansible@ip-172-31-47-208 ~]$ cat two.yml
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: Install Apache HTTP server
+      yum: name=httpd update_cache=yes state=latest
+    - name: Start HTTP Server
+      service: name=httpd enabled=yes state=started
+    - name: Insert Index Page
+      template:
+       src: index.html
+       dest: /var/www/html/index.html
+...
+[ansible@ip-172-31-47-208 ~]$

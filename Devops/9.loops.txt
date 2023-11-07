@@ -1,0 +1,15 @@
+[ansible@ip-172-31-47-208 ~]$ cat loops.yml
+---
+- hosts: localhost
+  become: true
+  tasks:
+    - name: Install list of packages
+      yum: name='{{item}}' state=present
+      with_items:
+       - httpd
+       - wget
+       - vim
+       - zip
+       - unzip
+...
+[ansible@ip-172-31-47-208 ~]$

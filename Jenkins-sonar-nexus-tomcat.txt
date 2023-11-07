@@ -1,0 +1,57 @@
+pipeline{
+    agent any
+     tools {
+        maven 'Maven-3.6.1'
+    }
+    
+    environment{
+        PATH = "/opt/maven3/bin:$PATH"
+    }
+    stages{
+        stage("Git Checkout"){
+            steps{
+                git credentialsId: 'javahome2', url: 'https://github.com/manthena2020/myweb.git'
+            }
+        }
+        stage("Maven Build"){
+            steps{
+                sh "mvn clean sonar:sonar package"
+                
+            }
+        }
+        stage('Upload War To Nexus'){
+            steps{
+                  nexusArtifactUploader artifacts: [
+                       [
+                            artifactId: 'myweb', 
+                            classifier: '', 
+                            file: "target/myweb-8.2.0.war", 
+                            type: 'war'
+                       ]
+                  ], 
+                  credentialsId: 'eb5a308e-90bb-4ece-8f18-3e10accb3b14', 
+                  groupId: 'in.javahome', 
+                  nexusUrl: '192.168.56.113:8090', 
+                  nexusVersion: 'nexus3', 
+                  protocol: 'http', 
+                  repository: 'sample-releases', 
+                  version: '8.2.0'  
+              }
+            }
+        stage("deploy-dev"){
+            steps{
+                sshagent(['ravi']) {
+                sh """
+                    scp -o StrictHostKeyChecking=no target/myweb-8.2.0.war  "root@192.168.56.113:/root/apache-tomcat-9.0.82/webapps/"
+                    
+                    ssh root@192.168.56.113  "/root/apache-tomcat-9.0.82/bin/shutdown.sh"
+                    
+                    ssh root@192.168.56.113  "/root/apache-tomcat-9.0.82/bin/startup.sh"
+                
+                """
+            }
+            
+            }
+        }
+    }
+}

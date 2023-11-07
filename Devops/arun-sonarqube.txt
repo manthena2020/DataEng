@@ -1,0 +1,83 @@
+SonarQube : code review tool / code quality tool
+
+code -->> continueos inspect -->> continue review
+
+********Sonarqube port number : 9000
+
+Dev --->>> code --->> push -->>github -->> code -->> sonarqube --->>> code review 
+
+code -->>> quality gates --->>> create --->>> sonarqube --->>> code review 
+
+major issues  --->>> impact
+
+minor issues  --->> just impact
+
+critical issues ===>>> email to developeemnt team.
+
+blocker issues. --->>> imediate -->> eamil --->> developers-->> issue resolve
+
+ops team -->>> responsiblity -->> sonarqube install -->> result -->> blocker issues -->> dev -->>>mail.
+
+sonarqube integrate with jenkins..
+
+job -->> create -->>> result -->>> developers -->> email.
+
+==================================================================
+
+Sonarqube installtion steps:
+
+minimum requirement :
+
+take one ec2 instance --->> 2 cpu , 4 gb ram.
+
+java install
+
+sonarqube install
+
+service sonar start
+
+sonarqube publicip:9000--->> dash board
+
+default username and password --->>> admin / admin
+
+token name -->> bhargavi -->> kjbecnlknclknkcll -->> save
+
+====================================
+
+jenkins integrate with sonarqube:
+
+1. we need to install Sonarqubescanner plugin install
+
+plugins -->> 3 ways install --->> local laptop download -->> manage jenkins --->>> advanced -->>> upload 
+
+2.81 --->> previoues version -->> download --->> just click
+
+https://updates.jenkins.io/download/plugins/sonar/  --->>> sonarqube scanner plugin link
+
+token generate --->> configure systems -->> add sonarqube server-->> name and token , sonarqube server url -->> save
+
+pom.xml
+
+under properties tag -->>> we will update sonarqube dash board link
+
+jenkins job create -->> new item -->> scm -->> gitrepo url
+
+build --->>> invoke toplevel targets--->> clean sonar:sonar package
+
+save
+
+bulild--->> complete project -->>> sonarqubue dashboard -->> myweb --->> passed.
+
+
+
+http://3.25.181.122:9000/
+
+
+
+
+
+
+
+
+
+

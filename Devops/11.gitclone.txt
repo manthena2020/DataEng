@@ -1,0 +1,11 @@
+[ansible@ip-172-31-47-208 ~]$ cat git.yml
+- hosts: localhost
+  become: yes
+  tasks:
+   - name: Install Git
+     yum: name=git state=present
+   - name: git clone
+     git:
+      repo: 'https://github.com/srinivas1987devops/myweb.git'
+      dest: /home/ansible/myweb
+[ansible@ip-172-31-47-208 ~]$

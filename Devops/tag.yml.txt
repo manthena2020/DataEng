@@ -1,0 +1,39 @@
+[root@ip-172-31-1-207 ec2-user]# cat http.yml
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: Install Apache HTTP server
+      yum: name=httpd update_cache=yes state=latest
+      tags:
+        - install
+    - name: Start HTTP Server
+      service: name=httpd enabled=yes state=started
+      tags:
+         - start
+    - name: Insert Index Page
+      template:
+       src: index.html
+       dest: /var/www/html/index.html
+      tags:
+        - deploy
+
+...
+[root@ip-172-31-1-207 ec2-user]#
+
+===================================================================
+
+
+
+  144  ansible-playbook http.yml --tags install
+ 
+  146  ansible-playbook http.yml --skip-tags install
+  147  ansible 172.31.12.174 -m yum -a "name=httpd state=absent" --become
+  148  ansible-playbook http.yml --tags install
+  149  ansible-playbook http.yml --skip-tags install
+  
+  162  ansible-playbook http.yml --limit all[0]
+  163  ansible-playbook http.yml --limit all[1]
+  164  ansible-playbook http.yml --limit all[2]
+  165  ansible-playbook http.yml --limit all[0:2]
+  

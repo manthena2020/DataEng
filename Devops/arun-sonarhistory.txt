@@ -1,0 +1,37 @@
+[root@ip-172-31-38-63 conf]# history
+    1  yum install -y java-1.8.0-openjdk-devel.x86_64
+
+
+    2  sudo wget -O /etc/yum.repos.d/sonar.repo http://downloads.sourceforge.net/project/sonar-pkg/rpm/sonar.repo
+    3  ls
+    4  sudo yum install sonar -y
+    5  service sonar start
+
+
+    6  cd /
+    7  ls
+    8  cd opt/
+    9  ls
+   10  cd sonar/
+   11  ls
+   12  cd conf/
+   13  ls
+   14  vi sonar.properties
+   15  service sonar stop
+   16  service sonar start
+   17  history
+[root@ip-172-31-38-63 conf]#
+
+
+prasad: e6b2a667db6ed40a5f3468b6699d9674437b620a
+
+
+prashu: e81ff17f9753d6f6d91db034a4ef0abd2cffdc7d
+
+
+ramu: 22608e97b4ed92f651828c05b072048254c1af4a
+
+
+rajasekahar: bc5cac6fd7250fed93469f76384333ff869214cc
+
+hari: 78d284ce6ed1f61862f557a4310606be735117ac

@@ -1,0 +1,24 @@
+[root@ip-172-31-1-207 ec2-user]# cat http.yml
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: Install Apache HTTP server
+      yum: name=httpd update_cache=yes state=latest
+      tags:
+        - install
+    - name: Insert Index Page
+      template:
+       src: index.html
+       dest: /var/www/html/index.html
+      tags:
+        - deploy
+      notify:
+        - restart
+  handlers:
+    - name: restart
+      service:
+        name: httpd
+        state: restarted
+...
+[root@ip-172-31-1-207 ec2-user]#

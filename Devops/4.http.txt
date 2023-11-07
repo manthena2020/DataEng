@@ -1,0 +1,9 @@
+[ansible@ip-172-31-47-208 ~]$ cat one.yml
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: Install Apache HTTP server
+      yum: name=httpd update_cache=yes state=latest
+...
+[ansible@ip-172-31-47-208 ~]$

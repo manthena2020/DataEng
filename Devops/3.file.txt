@@ -1,0 +1,10 @@
+[ansible@ip-172-31-47-208 ~]$ cat file.yml
+---
+- hosts: localhost
+  tasks:
+   - name: Create a file
+     file:
+      path: /tmp/vasu
+      state: touch
+...
+[ansible@ip-172-31-47-208 ~]$
