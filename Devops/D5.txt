@@ -1,0 +1,9 @@
+FROM docker.io/centos
+MAINTAINER admin
+RUN yum -y install httpd
+RUN echo "Welcome to our homepage created using dockerfile" > /var/www/html/index.html
+EXPOSE 80
+CMD ["/usr/sbin/httpd", "-D", "FOREGROUND"]
+
+
+pabburohinigoud@gmail.com.

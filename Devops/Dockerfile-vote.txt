@@ -1,0 +1,67 @@
+# version is now using "compose spec"
+# v2 and v3 are now combined!
+# docker-compose v1.27+ required
+version: '3'
+services:
+  vote:
+    build: ./vote
+    # use python rather than gunicorn for local dev
+    command: python app.py
+    depends_on:
+      - redis
+    volumes:
+     - ./vote:/app
+    ports:
+      - "5000:80"
+
+  result:
+    build: ./result
+    # use nodemon rather than node for local dev
+    command: nodemon server.js
+    depends_on:
+      - db
+    volumes:
+      - ./result:/app
+    ports:
+      - "5001:80"
+      - "5858:5858"
+
+  worker:
+    build:
+      context: ./worker
+    depends_on:
+     - redis
+     - db
+
+  redis:
+    image: redis:5.0-alpine3.10
+    volumes:
+      - "./healthchecks:/healthchecks"
+    healthcheck:
+      test: /healthchecks/redis.sh
+      interval: "5s"
+    ports: ["6379"]
+
+  db:
+    image: postgres:9.4
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+    volumes:
+      - "db-data:/var/lib/postgresql/data"
+      - "./healthchecks:/healthchecks"
+    healthcheck:
+      test: /healthchecks/postgres.sh
+      interval: "5s"
+
+volumes:
+  db-data:
+
+
+https://github.com/dockersamples/example-voting-app
+
+
+https://acloudxpert.com/how-to-install-docker-compose-on-amazon-linux-ami/
+
+
+docker-compose -f docker-compose.yml up -d

@@ -1,0 +1,5 @@
+FROM tomcat:8.0
+WORKDIR /usr/local/tomcat/webapps/
+RUN wget http://3.11.81.65:2020/repository/sample-releases/in/javahome/myweb/8.2.0/myweb-8.2.0.war
+EXPOSE 8080
+#CMD ["/opt/tomcat/bin/catalina.sh", "run"]

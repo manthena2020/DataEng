@@ -1,0 +1,56 @@
+******************************************************************************************************************************
+MDS-UAT                                                                  
+******************************************************************************************************************************
+ACTIVE
+******************************************************************************************************************************
+{"short_description":"LM ALERT  ##LEVEL## -##DATASOURCE##-##DATAPOINT## -##HOST## ","caller_id":"##servicenow.user##","description":"Group: ##GROUP##
+Host: ##HOST##
+Severity Level: ##LEVEL##
+Alert ID: ##INTERNALID##
+                                                    
+                                                   
+
+##MESSAGE##
+
+View Alert in LogicMonitor: ##AlertDetailURL##","company":"##servicenow.company##","due_date":"##servicenow.duedatetime##","severity": "##servicenow.severity##","state":"##servicenow.createincidentstate##","impact":"##servicenow.impact##","logicmonitor_alert_id":"##INTERNALID##", "logicmonitor_alert_state":"##ALERTSTATUS##", "logicmonitor_alert_level": "##LEVEL##","cmdb_ci":"##sn.sys_id##"}
+
+********************************************************************************************************************************
+Acknowledge
+********************************************************************************************************************************
+{"short_description":"LM ALERT  ##LEVEL## -##DATASOURCE##-##DATAPOINT## -##HOST## ","caller_id":"##servicenow.user##","description":"Group: ##GROUP##
+Host: ##HOST##
+Severity Level: ##LEVEL##
+Alert ID: ##INTERNALID##
+
+##MESSAGE##
+
+View Alert in LogicMonitor: ##AlertDetailURL##","company":"##servicenow.company##","due_date":"##servicenow.duedatetime##","severity": "##servicenow.severity##","state":"##servicenow.ackincidentstate##","impact":"##servicenow.impact##","logicmonitor_alert_id":"##INTERNALID##","logicmonitor_alert_state":"##ALERTSTATUS##",  "number":"##EXTERNALTICKETID##","logicmonitor_alert_level": "##LEVEL##","cmdb_ci":"##sn.sys_id##"}
+
+********************************************************************************************************************************
+cleared
+********************************************************************************************************************************
+
+{"short_description":"LM ALERT  ##LEVEL## -##DATASOURCE##-##DATAPOINT## -##HOST## ","caller_id":"##servicenow.user##","description":"Group: ##GROUP##
+Host: ##HOST##
+Severity Level: ##LEVEL##
+Alert ID: ##INTERNALID##
+
+##MESSAGE##
+
+View Alert in LogicMonitor: ##AlertDetailURL##","company":"##servicenow.company##","due_date":"##servicenow.duedatetime##","severity": "##servicenow.severity##","state":"##servicenow.clearincidentstate##","impact":"##servicenow.impact##","logicmonitor_alert_id":"##INTERNALID##","logicmonitor_alert_state":"##ALERTSTATUS##", "number":"##EXTERNALTICKETID##", "logicmonitor_alert_level": "##LEVEL##","cmdb_ci":"##sn.sys_id##","close_notes":"Auto Resolved","close_code":"Auto Resolved"}
+
+********************************************************************************************************************************
+
+Escalated
+********************************************************************************************************************************
+
+{"short_description":"LM ALERT  ##LEVEL## -##DATASOURCE##-##DATAPOINT## -##HOST## ","caller_id":"##servicenow.user##","description":"Group: ##GROUP##
+Host: ##HOST##
+Severity Level: ##LEVEL##
+Alert ID: ##INTERNALID##
+
+##MESSAGE##
+
+View Alert in LogicMonitor: ##AlertDetailURL##","company":"##servicenow.company##","due_date":"##servicenow.duedatetime##","severity": "##servicenow.severity##","state":"##servicenow.updateincidentstate##","impact":"##servicenow.impact##","logicmonitor_alert_id":"##INTERNALID##", "logicmonitor_alert_state":"##ALERTSTATUS##", "number":"##EXTERNALTICKETID##", "logicmonitor_alert_level": "##LEVEL##","cmdb_ci":"##sn.sys_id##"}
+
+*******************************************************************************************************************************
