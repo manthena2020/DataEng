@@ -1,0 +1,210 @@
+[root@ip-172-31-6-75 ec2-user]# history
+    1  yum install docker -y
+    2  systemctl enable docker && systemctl start docker
+    3  cat <<EOF > /etc/yum.repos.d/kubernetes.repo
+[kubernetes]
+
+name=Kubernetes
+
+baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+
+enabled=1
+
+gpgcheck=1
+
+repo_gpgcheck=0
+
+gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+
+exclude=kube*
+
+EOF
+
+    4  cat <<EOF >  /etc/sysctl.d/k8s.conf
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+EOF
+
+    5  sysctl --system
+    6  setenforce 0
+    7  yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
+    8  systemctl enable kubelet && systemctl start kubelet
+    9  kubeadm init
+   10  ls -al
+   11  export KUBECONFIG=/etc/kubernetes/admin.conf
+   12  kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+   13  kubectl get nodes
+   14  kubectl get nodes
+   15  kubectl get nodes
+   16  kubectl get pods
+   17  kubectl get pods -o wide
+   18  vi pod1.yml
+   19  kubectl create -f pod1.yml
+   20  kubectl get pods
+   21  kubectl get pods
+   22  kubectl get pods
+   23  kubectl get pods
+   24  kubectl get pods
+   25  kubectl get pods -o wide
+   26  kubectl get pods -o wide
+   27  kubectl get pods
+   28  kubectl describe pod nodeapp
+   29  kubectl exec nodeapp printenv
+   30  kubectl exec -it nodeapp bash
+   31  kubectl logs nodeapp
+   32  kubectl expose pods/nodeapp --type="NodePort" --port 8080
+   33  kubectl get svc
+   34  kubectl get svc -o wide
+   35  kubectl delete svc nodeapp
+   36  kubectl get pods
+   37  kuebectl delete pod nodeapp
+   38  kubectl delete pod nodeapp
+   39  history
+   40  kubectl get pods
+   41  kubectl get svc
+   42  ls
+   43  vi pod1.yml
+   44  vi pod1.yml
+   45  kubectl create -f pod1.yml
+   46  kubectl get pods
+   47  vi pod1.yml
+   48  kubectl create -f pod1.yml
+   49  kubectl get pods
+   50  vi pod1.yml
+   51  kubectl create -f pod1.yml
+   52  kubectl get pods
+   53  kubectl get pods -o wide
+   54  kubectl describe pod nodeapp
+   55  kubectl describe pod nodeapp2
+   56  kubectl describe pod nodeapp3
+   57  vi svc.yml
+   58  kubectl create -f svc.yml
+   59  kubectl get svc
+   60  kubectl get svc -o wide
+   61  kubectl describe svc nodeapp
+   62  kubectl get pods -o wide
+   63  vi svc.yml
+   64  kubectl create -f svc.yml
+   65  kubectl get pods -o wide
+   66  kubectl get svc -o wide
+   67  kubectl get svc -o wide
+   68  kubectl describe svc hariapp
+   69  kubectl describe svc nodeapp
+   70  kubectl describe svc hariapp
+   71  vi pod1.yml
+   72  kubectl create -f pod1.yml
+   73  kubectl describe svc hariapp
+   74  kubectl describe pod nodeapp4
+   75  kubectl get svc
+   76  kubectl get svc -o wide
+   77*
+   78  kubectl descrive svc hariapp
+   79  kubectl describe svc hariapp
+   80  ls
+   81  vi svc.yml
+   82  kubectl apply -f svc.yml
+   83  kubectl describe svc hariapp
+   84  kubectl get svc hariapp
+   85  kubectl get svc
+   86  vi svc.yml
+   87  kubectl apply -f svc.yml
+   88  vi svc.yml
+   89  kubectl apply -f svc.yml
+   90  kubectl get svc
+   91  kubectl get svc
+   92  kubectl get svc hariapp
+   93  kubectl get svc hariapp
+   94  kubectl get pods
+   95  kubectl get svc
+   96  kubectl get svc
+   97  kubectl get pods
+   98  kubectl delete nodeapp nodeapp2 nodeapp3 nodeapp4
+   99  kubectl delete nodeapp2 nodeapp3 nodeapp4
+  100  kubectl delete pod nodeapp4
+  101  kubectl delete pod nodeapp3
+  102  kubectl delete pod nodeapp2
+  103  kubectl delete pod nodeapp
+  104  kubectl get svc
+  105  kubectl delete svc nodeapp
+  106  kubectl delete svc hariapp
+  107  kubectl get svc
+  108  kubectl create -f pod1.yml
+  109  kubectl get pods
+  110  kubectl delete pod nodeapp4
+  111  vi rs.yml
+  112  kubectl create -f rs.yml
+  113  kubectl get pods
+  114  kubectl get svc
+  115  kubectl delete pod nodeapp-bhkbp
+  116*
+  117  vi rs.yml
+  118  kubectl apply -f rs.yml
+  119  kubectl get pods
+  120  kubectl delte pod nodeapp-zsd59
+  121  kubectl delete pod nodeapp-zsd59
+  122  kubectl get pods
+  123  kubectl get pods
+  124  cat rs.yml
+  125  kubectl get pods -o wide
+  126  vi rs.yml
+  127  kubectl apply -f rs.yml
+  128  kubectl get pods -o wide
+  129  kubectl get pods -o wide
+  130  kubectl get pods -o wide
+  131  kubectl get pods -o wide
+  132  vi rs.yml
+  133  kubectl apply -f rs.yml
+  134  kubectl get pods -o wide
+  135  kubectl get pods -o wide
+  136  kubectl get pods
+  137  kubectl get pods
+  138  kubectl get pods
+  139  kubectl get pods -o wide
+  140  vi svc.yml
+  141  kubectl create -f svc.yml
+  142  kubectl get svc
+  143  kubectl get svc
+  144  cat svc.yml
+  145  kubectl describe svc hariapp
+  146  vi rs.yml
+  147  kubectl apply -f rs.yml
+  148  kubectl get pods
+  149  kubectl get svc
+  150  kubectl describe svc hariapp
+  151  kubectl delete rs rs.yml
+  152  ls
+  153  kubectl get all
+  154  kubectl get rs
+  155  kubectl delete  rs nodeapp
+  156  kubectl get all
+  157  kubectl get rs
+  158  kubectl get pods
+  159  ls
+  160  wget https://raw.githubusercontent.com/srinivas1987devops/kubernetes-1/master/deployments/deployments.yml
+  161  ls
+  162  cat deployments.yml
+  163  kubectl create -f deployments.yml
+  164  kubectl get svc
+  165  cat deployments.yml
+  166  vi deployments.yml
+  167  kubectl apply -f deployments.yml
+  168  kubectl get svc
+  169  vi deployments.yml
+  170  kubectl apply -f deployments.yml
+  171  kubectl get svc
+  172  vi deployments.yml
+  173  kubectl apply -f deployments.yml
+  174  kubectl get pods
+  175  kubectl rollout history deployment nodeapp
+  176  kubectl rollout undo deployment nodeapp
+  177  kubectl rollout history deployment nodeapp
+  178  kubectl rollout undo deployment nodeapp
+  179  kubectl rollout history deployment nodeapp
+  180  ls
+  181  cat deployments.yml
+  182  kubectl get svc
+  183  kubectl describe hariapp
+  184  kubectl describe svc hariapp
+  185  history
+  186  history
+[root@ip-172-31-6-75 ec2-user]#

@@ -1,0 +1,117 @@
+ 47  kubectl get ns
+   48  kubectl delete ns monitoring
+   49  kubectl get ns
+   50  ls
+   51  top
+   52  pwd
+   53  cd ~ec2-user/
+   54  ./get_helm.sh
+   55  helm --
+   56  helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+   57  helm repo list
+   58  helm repo update
+   59  helm repo list
+   60  k get ns
+   61  kubectl get ns
+   62  export KUBECONFIG=/etc/kubernetes/admin.conf
+   63  kubectl get ns
+   64  k get pods
+   65  kubectl get pods -A
+   66  helm install prometheus prometheus-community/kube-prometheus-stack
+   67  kubectl get pods
+   68  kubectl get all
+   69  kubectl get pods
+   70  clear
+   71  kubectl get svc
+   72  kubectl get pods
+   73  kubectl get nodes
+   74  kubectl get svc
+   75  kubectl get service
+   76  kubectl edit svc prometheus-grafana
+   77  kubectl get svc
+   78  kubectl get nodes -o wide
+   79  kubectl edit svc prometheus-kube-state-metrics
+   80  kubectl get svc
+   81  kubectl edit svc prometheus-kube-state-metrics
+   82  kubectl get svc
+   83  kubectl edit svc prometheus-kube-prometheus-prometheus
+   84  kubectl get svc
+   85  kubectl get secret
+   86  kubectl describe secret prometheus-grafana
+   87  kubectl get secret prometheus-grafana
+   88  kubectl secret prometheus-grafana -o yaml
+   89  kubectl get secret prometheus-grafana -o yaml
+   90  echo "YWRtaW4="|base64 -d
+   91  echo "cHJvbS1vcGVyYXRvcg=="|base64 -d
+   92  kubectl get nodes
+   93  kubectl get pods
+   94  kubectl get pods -o wide
+   95  clear
+   96  cat >mydep.yaml
+   97  cat mydep.yaml
+   98  kubectl apply -f mydep.yaml
+   99  kubectl get deploymnet
+  100  kubectl get deployments
+  101  kubectl get pods
+  102  history
+[root@ip-172-31-5-126 ec2-user]#
+
+
+129  export KUBECONFIG=/etc/kubernetes/admin.conf
+  130  helm list
+  131  helm uninstall prometheus
+  132  helm list
+  133  helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+  134  helm list
+  135  helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+  136  helm repo list
+  137  helm repo update
+  138  helm install vasu prometheus-community/kube-prometheus-stack
+  139  kubectl get ns
+  140  kubectl get pods
+  141  kubectl get pods -n kube-node-lease
+  142  kubectl get pods -n kube-system
+  143  kubectl get pods -n default
+  144  kubectl get svc
+  145  kubectl edit vasu-grafana
+  146  kubectl edit svc vasu-grafana
+  147  kubectl edit svc vasu-kube-prometheus-stack-prometheus
+  148  kubectl get svc
+  149  kubectl secret prometheus-grafana -o yaml
+  150  kubectl get secret prometheus-grafana -o yaml
+  151  kubectl get secret casu-grafana -o yaml
+  152  kubectl get secret vasu-grafana -o yaml
+  153  echo "YWRtaW4="|base64 -d
+  154  echo "cHJvbS1vcGVyYXRvcg=="|base64 -d
+  155  kubectl get pods
+  156  kubectl delete deployments
+  157  kubectl delete deployments nodeapp
+  158  kubectl get pods
+  159  ls
+  160  pwd
+  161  cd /home/ec2-user/
+  162  ls
+  163  vi mydep.yaml
+  164  kubectl get pods
+  165  vi mydep.yaml
+  166  kubectl create -f mydep.yaml
+  167  kubectl get pods
+  168  history
+[root@ip-172-31-5-126 ec2-user]#
+
+
+
+https://helm.sh/docs/intro/install/
+
+https://grafana.com/grafana/dashboards/8588
+
+
+https://artifacthub.io/packages/helm/prometheus-community/kube-prometheus-stack
+
+
+
+
+
+
+
+

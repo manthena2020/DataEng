@@ -1,0 +1,25 @@
+162  cat deployments.yml
+  163  kubectl create -f deployments.yml
+  164  kubectl get svc
+  165  cat deployments.yml
+  166  vi deployments.yml
+  167  kubectl apply -f deployments.yml
+  168  kubectl get svc
+  169  vi deployments.yml
+  170  kubectl apply -f deployments.yml
+  171  kubectl get svc
+  172  vi deployments.yml
+  173  kubectl apply -f deployments.yml
+  174  kubectl get pods
+  175  kubectl rollout history deployment nodeapp
+  176  kubectl rollout undo deployment nodeapp
+  177  kubectl rollout history deployment nodeapp
+  178  kubectl rollout undo deployment nodeapp
+  179  kubectl rollout history deployment nodeapp
+  180  ls
+  181  cat deployments.yml
+  182  kubectl get svc
+  183  kubectl describe hariapp
+  184  kubectl describe svc hariapp
+  185  history
+[root@ip-172-31-6-75 ec2-user]#

@@ -1,0 +1,25 @@
+ 18  vi pod1.yml
+   19  kubectl create -f pod1.yml
+   20  kubectl get pods
+   21  kubectl get pods
+   22  kubectl get pods
+   23  kubectl get pods
+   24  kubectl get pods
+   25  kubectl get pods -o wide
+   26  kubectl get pods -o wide
+   27  kubectl get pods
+   28  kubectl describe pod nodeapp
+   29  kubectl exec nodeapp printenv
+   30  kubectl exec -it nodeapp bash
+   31  kubectl logs nodeapp
+   32  kubectl expose pods/nodeapp --type="NodePort" --port 8080
+   33  kubectl get svc
+   34  kubectl get svc -o wide
+   35  kubectl delete svc nodeapp
+   36  kubectl get pods
+   37  kuebectl delete pod nodeapp
+   38  kubectl delete pod nodeapp
+   39  history
+[root@ip-172-31-6-75 ec2-user]#
+
+kubectl run nodeapp --image=kammana/nodeapp:v1

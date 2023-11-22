@@ -1,0 +1,45 @@
+[root@ip-172-31-38-190 ec2-user]# history
+    1  yum install docker -y
+    2  systemctl enable docker && systemctl start docker
+    3  cat <<EOF > /etc/yum.repos.d/kubernetes.repo
+[kubernetes]
+
+name=Kubernetes
+
+baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+
+enabled=1
+
+gpgcheck=1
+
+repo_gpgcheck=0
+
+gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+
+exclude=kube*
+
+EOF
+
+    4  cat <<EOF >  /etc/sysctl.d/k8s.conf
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+EOF
+
+    5  sysctl --system
+    6  setenforce 0
+    7  yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
+    8  systemctl enable kubelet && systemctl start kubelet
+    9  kubeadm init
+   10  export KUBECONFIG=/etc/kubernetes/admin.conf
+   11  ls -al
+   12  vi .bash_profile
+   13  kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+   14  kubectl get nodes
+   15  kubectl get nodes
+   16  history
+[root@ip-172-31-38-190 ec2-user]#
+
+
+[root@ip-172-31-38-190 ec2-user]# kubectl create -f services.yml
+The Service "nodeapp" is invalid: spec.ports[0].nodePort: Invalid value: 40000: provided port is not in the valid range. The range of valid ports is 30000-32767
+

@@ -1,0 +1,17 @@
+chmod 777 /var/run/docker.sock
+
+kubectl apply -f deployments.yml  --record=true
+
+==>>.Kubernetes Deployment revisions : Kubernetes maintains deployment state of all versions
+
+inorder to see deployment revision history
+
+kubectl rollout history deployment nodeapp
+
+==>>Undo recent deployment
+
+kubectl rollout undo deployment nodeapp
+
+==>> rollback to specific deployment revision
+
+kubectl rollout undo deployment nodeapp --to-revision=1

@@ -1,0 +1,14 @@
+[root@ip-172-31-6-75 ec2-user]# cat svc.yml
+kind: Service
+apiVersion: v1
+metadata:
+  name: hariapp
+spec:
+  selector:
+    app: nodeapp
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080
+  type: LoadBalancer
+[root@ip-172-31-6-75 ec2-user]#

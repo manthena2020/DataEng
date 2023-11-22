@@ -1,0 +1,14 @@
+[root@ip-172-31-38-190 ec2-user]# cat pods.yml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nodeapp
+  labels:
+    app: nodeapp
+spec:
+  containers:
+    - name: nodeapp
+      image: kammana/nodeapp:v1
+      ports:
+        - containerPort: 8080
+[root@ip-172-31-38-190 ec2-user]#

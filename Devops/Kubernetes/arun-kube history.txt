@@ -1,0 +1,153 @@
+[root@ip-172-31-34-14 ec2-user]# history
+    1  yum install docker -y
+    2  systemctl enable docker && systemctl start docker
+    3  swapoff -a
+    4  vi /etc/docker/daemon.json
+    5  sudo systemctl restart docker
+    6  cat <<EOF > /etc/yum.repos.d/kubernetes.repo
+[kubernetes]
+
+name=Kubernetes
+
+baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+
+enabled=1
+
+gpgcheck=1
+
+repo_gpgcheck=0
+
+gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+
+exclude=kube*
+
+EOF
+
+    7  cat <<EOF >  /etc/sysctl.d/k8s.conf
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+EOF
+
+    8  sysctl --system
+    9  setenforce 0
+   10  yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
+   11  systemctl enable kubelet && systemctl start kubelet
+   12  kubeadm init
+   13  export KUBECONFIG=/etc/kubernetes/admin.conf
+   14  ls -al
+   15  vi .bash_profile
+   16  kubectl get nodes
+   17  kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+   18  kubectl get nodes
+   19  kubectl get nodes
+   20  kubectl get nodes
+   21  kubectl get nodes
+   22  kubectl get all
+   23  vi pods.yml
+   24  kubectl create -f pods.yml
+   25  kubectl get pods
+   26  kubectl get pods
+   27  kubectl get pods -o wide
+   28  kubectl describe pod nodeapp
+   29  kubectl exec -it nodeapp bash
+   30  kubectl logs nodeapp
+   31  kubectl exec nodeapp printenv
+   32  kubectl expose pods/nodeapp --type="NodePort" --port 8080
+   33  kubectl get svc
+   34  kubectl get svc -o wide
+   35  kubectl describe svc nodeapp
+   36  kubectl get svc
+   37  kubectl get pods -o wide
+   38  kubectl get pods
+   39  kubectl delete pod nodeapp
+   40  ls
+   41  kubectl get pods
+   42  kubectl get svc
+   43  kubectl delete svc nodeapp
+   44  ls
+   45  kubectl create -f pods.yml
+   46  kubectl get pods
+   47  vi svc.yml
+   48  kubectl create -f svc.yml
+   49  kubectl get svc
+   50  vi pods.yml
+   51  kubectl apply -f pods.yml
+   52  kubectl get pods
+   53  vi pods.yml
+   54  kubectl apply -f pods.yml
+   55  kubectl get pods
+   56  kubectl get pods -o wide
+   57  kubectl describe pod nodeapp
+   58  kubectl describe pod nodeapp2
+   59  kubectl describe pod nodeapp3
+   60  kubectl describe svc nodeapp
+   61  kubectl get svc -o wide
+   62  vi pods.yml
+   63  kubectl apply -f pods.yml
+   64  kubectl get pods
+   65  kubectl get pods -o wide
+   66  kubectl describe pod nodeapp4
+   67  vi svc.yml
+   68  kubectl apply -f svc.yml
+   69  vi svc.yml
+   70  kubectl apply -f svc.yml
+   71  kubectl get svc hariapp
+   72  kubectl get svc hariapp -o wide
+   73  kubectl describe svc hariapp
+   74  kubectl get pod nodeapp4
+   75  kubectl get pod nodeapp4 -o wide
+   76  vi pods.yml
+   77  kubectl apply -f pods.yml
+   78  kubectl get pod nodeapp5 -o wide
+   79  kubectl describe svc hariapp
+   80  kubectl get pods
+   81  kubectl delete pod nodeapp nodeapp2 nodeapp3 nodeapp4 nodeapp5
+   82  kubectl get svc
+   83  kubectl delete svc nodeapp hariapp
+   84  kubectl create -f pods.yml
+   85  kubectl get pods
+   86  vi svc.yml
+   87  kubectl apply -f svc.yml
+   88  kubectl get svc
+   89  kubectl delete pod nodeapp5
+   90  kubectl delete svc hariapp
+   91  vi rs.yml
+   92  kubectl get rs
+   93  kubectl create -f rs.yml
+   94  kubectl get pods
+   95  kubectl get rs
+   96  kubectl delete pod nodeapp-cm4q5
+   97  kubectl get pods
+   98  vi rs.yml
+   99  kubectl apply -f rs.yml
+  100  kubectl apply -f rs.yml
+  101  kubectl get pods
+  102  vi rs.yml
+  103  kubectl apply -f rs.yml
+  104  kubectl get pods
+  105  kubectl get rs
+  106  kubectl delete rs nodeapp
+  107  kubectl get pods
+  108  vi deploy.yml
+  109  kubectl create -f deploy.yml
+  110  kubectl get deployments
+  111  vi svc.yml
+  112  kubectl apply -f svc.yml
+  113  kubectl get svc
+  114  kubectl get svc
+  115  kubectl get svc
+  116  kubectl get pods
+  117  kubectl get svc
+  118  kubectl get svc
+  119  vi deploy.yml
+  120  kubectl apply-f deploy.yml
+  121  kubectl apply -f deploy.yml
+  122  kubectl apply -f deploy.yml
+  123  vi deploy.yml
+  124  kubectl apply -f deploy.yml
+  125  kubectl rollout history deployment nodeapp
+  126  kubectl rollout undo deployment nodeapp --to-revision=3
+  127  kubectl rollout undo deployment nodeapp --to-revision=2
+  128  kubectl rollout undo deployment nodeapp --to-revision=1
+  129  history
+[root@ip-172-31-34-14 ec2-user]#

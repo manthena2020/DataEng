@@ -1,0 +1,15 @@
+[root@ip-172-31-38-190 ec2-user]# cat services.yml
+kind: Service
+apiVersion: v1
+metadata:
+  name: hariapp
+spec:
+  selector:
+    app: hariapp
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080
+    nodePort: 31008
+  type: NodePort
+[root@ip-172-31-38-190 ec2-user]#
